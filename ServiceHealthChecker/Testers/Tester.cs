@@ -12,9 +12,36 @@ namespace ServiceHealthChecker.Testers
         private static HttpClient httpClient = new HttpClient();
         public static async Task<ServiceStatus> TestService(Service service)
         {
+            HttpResponseMessage response = null;
+            try
+            {
+                switch (service.Method)
+                {
+                    case HttpMethods.GET:
+                        response = await httpClient.GetAsync(service.URI);
+                        break;
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                return ServiceStatus.NetworkError;
+            }
+            catch (TaskCanceledException e)
+            {
+                return ServiceStatus.Timeout;
+            }
+
+            if (response == null)
+            {
+                return service.Status;
+            }
+
+            if (response.StatusCode != service.ExpectedCode)
+            {
+                return ServiceStatus.ValidationError;
+            }
             
-            await Task.Delay(5000);
-            return ServiceStatus.Timeout;
+            return ServiceStatus.AliveAndWell;
         }
     }
 }
