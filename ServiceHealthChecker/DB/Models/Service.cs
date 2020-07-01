@@ -1,8 +1,17 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using SQLite;
 
 namespace ServiceHealthChecker.DB.Models
 {
+    public enum ServiceStatus
+    {
+        AliveAndWell,
+        ValidationError,
+        Timeout,
+        Untested
+    }
+
     public class Service
     {
         [PrimaryKey, AutoIncrement] 
@@ -11,6 +20,8 @@ namespace ServiceHealthChecker.DB.Models
         public string Name { get; set; }
         public Uri URI { get; set; }
         public string Method { get; set; }
+        public ServiceStatus Status { get; set; } = ServiceStatus.Untested;
         public int Timeout { get; set; } = Constants.DefaultTimeout; //timeout in seconds
+
     }
 }
