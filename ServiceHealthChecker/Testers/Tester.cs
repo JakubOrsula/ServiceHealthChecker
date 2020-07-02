@@ -10,8 +10,17 @@ namespace ServiceHealthChecker.Testers
     public static class Tester
     {
         private static HttpClient httpClient = new HttpClient();
-        public static async Task<ServiceStatus> TestService(Service service)
+        public static async Task<ProbingLog> TestService(Service service)
         {
+            var res = new ProbingLog
+            {
+                ServiceId = service.ID,
+                UsedUri = service.URI,
+                UsedMethod = service.Method,
+                UsedExpectedCode = service.ExpectedCode,
+                UsedTimeout = service.Timeout,
+                Status = ServiceStatus.Untested
+            };
             HttpResponseMessage response = null;
             try
             {
@@ -24,24 +33,29 @@ namespace ServiceHealthChecker.Testers
             }
             catch (HttpRequestException e)
             {
-                return ServiceStatus.NetworkError;
+                res.Status = ServiceStatus.NetworkError;
+                return res;
             }
             catch (TaskCanceledException e)
             {
-                return ServiceStatus.Timeout;
+                res.Status = ServiceStatus.Timeout;
+                return res;
             }
 
             if (response == null)
             {
-                return service.Status;
+                res.Status = ServiceStatus.NetworkError;
+                return res;
             }
 
             if (response.StatusCode != service.ExpectedCode)
             {
-                return ServiceStatus.ValidationError;
+                res.Status = ServiceStatus.ValidationError;
+                return res;
             }
-            
-            return ServiceStatus.AliveAndWell;
+
+            res.Status = ServiceStatus.AliveAndWell;
+            return res;
         }
     }
 }

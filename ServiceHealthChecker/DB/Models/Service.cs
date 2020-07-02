@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.CompilerServices;
 using SQLite;
 
 namespace ServiceHealthChecker.DB.Models
@@ -25,11 +24,13 @@ namespace ServiceHealthChecker.DB.Models
     public class Service
     {
         [PrimaryKey, AutoIncrement] 
-        public int ID { get; set; } //todo whats the id of not yet inserted row?
+        public int ID { get; set; }
         public string Name { get; set; }
         public Uri URI { get; set; }
         public HttpMethods Method { get; set; }
         public HttpStatusCode ExpectedCode { get; set; } = HttpStatusCode.OK;
+        
+        //todo remove the following prop
         public ServiceStatus Status { get; set; } = ServiceStatus.Untested;
         public int Timeout { get; set; } = Constants.DefaultTimeout; //timeout in seconds
 

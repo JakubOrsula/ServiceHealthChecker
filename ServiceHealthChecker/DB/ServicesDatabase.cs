@@ -5,6 +5,7 @@ using SQLite;
 
 namespace ServiceHealthChecker.DB
 {
+    //todo rename to represent everything
     public class ServicesDatabase
     {
         readonly SQLiteAsyncConnection database;
