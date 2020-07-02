@@ -1,6 +1,19 @@
-﻿<Label Text=@service.Name />
-<Label Text=@($"Method: {service.Method}") />
-<Button OnClick="@GoBack" Text="Go back" />
+﻿@if (serviceToEdit != null)
+{
+    <ServiceForm newService="serviceToEdit" DoneCallback="@(() => serviceToEdit = null)" />
+}
+else
+{
+    <Label Text=@service.Name />
+    <Label Text=@($"Method: {service.Method}") />
+    <Label Text=@($"URI: {service.URI}") />
+    <Label Text=@($"Timeout: {service.Timeout}s") />
+    <Label Text=@($"Last status: {service.Status}") />
+    <Label Text="Validation:" />
+    <Label Text=@($"Expected response: {service.ExpectedCode}") />
+    <Button OnClick="@(() => serviceToEdit = service)" Text="Edit" />
+    <Button OnClick="@GoBack" Text="Go back" />
+}
 
 @code {
 
@@ -9,5 +22,7 @@
 
     [Parameter]
     public EventCallback GoBack { get; set; }
+
+    private ServiceHealthChecker.DB.Models.Service serviceToEdit = null;
 
 }
