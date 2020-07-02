@@ -1,8 +1,9 @@
 ﻿@using ServiceHealthChecker.Components.Services;
-
+@using ServiceHealthChecker.Components.History;
+@using ServiceHealthChecker.Components.Navigator;
 <ScrollView>
     <StackLayout>
-        <ServiceHealthChecker.Components.Navigator.Navigator OnNavigationClickCallback="@setView" />
+        <Navigator OnNavigationClickCallback="@setView" />
         @switch (_currView)
         {
             case Homepage.AvailableViews.Validators:
@@ -12,7 +13,7 @@
                 <ServicesView />
                 break;
             case AvailableViews.History:
-                <Label Text="History time"></Label>
+                <HistoryView />
                 break;
 
         }

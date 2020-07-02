@@ -1,0 +1,25 @@
+﻿@foreach(var log in probingLogs)
+{
+    <Frame>
+        <Label Text="@($"Name: {log.UsedUri.ToString()}")" />
+    </Frame>
+}
+
+@using System.Collections.ObjectModel;
+@using ServiceHealthChecker.DB.Models;
+@using System.Threading;
+@code {
+    private List<ProbingLog> probingLogs = new List<ProbingLog>();
+    private Semaphore refreshSemaphore = new Semaphore(0, 1);
+
+    public HistoryView()
+    {
+        RefreshLogs();
+    }
+
+    private async void RefreshLogs()
+    {
+        probingLogs = await App.LogsDb.GetProbingLogsAsync();
+        StateHasChanged();
+    }
+}

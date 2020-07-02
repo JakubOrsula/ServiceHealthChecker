@@ -11,8 +11,10 @@ namespace ServiceHealthChecker
     public class App : Application
     {
         private static DB.ServicesDatabase servicesDb;
+        private static DB.LogsDatabase logsDb;
         public static DB.ServicesDatabase ServicesDb => servicesDb ?? (servicesDb = new DB.ServicesDatabase());
-        
+        public static DB.LogsDatabase LogsDb => logsDb ?? (logsDb = new DB.LogsDatabase());
+
         public App()
         {
             var host = MobileBlazorBindingsHost.CreateDefaultBuilder()

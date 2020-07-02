@@ -31,7 +31,7 @@
         //todo do some renaming for the love of god
         var result = await Testers.Tester.TestService(service);
         service.Status = result.Status;
-        await App.ServicesDb.SaveServiceAsync(service);
+        await App.LogsDb.SaveProbingLogAsync(result);
         isProbing = false;
         StateHasChanged();
     }

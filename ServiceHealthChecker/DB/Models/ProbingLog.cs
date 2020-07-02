@@ -10,7 +10,7 @@ namespace ServiceHealthChecker.DB.Models
         [PrimaryKey, AutoIncrement] 
         public int ID { get; set; }
 
-        public int ServiceId { get; set; }
+        public string ServiceName { get; set; }
         public Uri UsedUri { get; set; }
         public HttpMethods UsedMethod { get; set; }
         public HttpStatusCode UsedExpectedCode { get; set; } = HttpStatusCode.OK;
