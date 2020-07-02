@@ -1,34 +1,37 @@
 @using ServiceHealthChecker.DB.Models;
 
-@if (selectedService != null)
+@if (_displayedServices == null)
 {
-    <ServiceDetailPage service="@selectedService" GoBack="@(() => selectedService = null)" />
+    <ActivityIndicator IsRunning="true" />
 }
 else
 {
-    @switch (serviceView)
+    @if (selectedService != null)
     {
-        case ServiceViews.ViewList:
-            @foreach (var service in _displayedServices)
-            {
-                <ServiceHealthChecker.Components.Services.ServiceSlot service=@service @key=@service.ID ServiceSelected="@((Service s) => selectedService = s)"/>
-            }
-            <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)">Create new service</Button>
-            break;
-        case ServiceViews.CreateNew:
-            <ServiceForm newService="@(new DB.Models.Service {
+        <ServiceDetailPage service="@selectedService" GoBack="@(() => selectedService = null)" />
+    }
+    else
+    {
+        @switch (serviceView)
+        {
+            case ServiceViews.ViewList:
+                @foreach (var service in _displayedServices)
+                {
+                    <ServiceHealthChecker.Components.Services.ServiceSlot service=@service @key=@service.ID ServiceSelected="@((Service s) => selectedService = s)" />
+                }
+                <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)">Create new service</Button>
+                break;
+            case ServiceViews.CreateNew:
+                <ServiceForm newService="@(new DB.Models.Service {
                                  Method = DB.Models.HttpMethods.GET,
                                  Name = "new service",
                                  URI = new Uri("https://example.com/")
                              })"
-                         DoneCallback="@(() => serviceView = ServiceViews.ViewList)" />
-            break;
+                             DoneCallback="@(() => serviceView = ServiceViews.ViewList)" />
+                break;
+        }
     }
 }
-
-
-
-
 
 
 @code
@@ -44,17 +47,17 @@ else
 
     private Service selectedService = null;
 
-    private List<DB.Models.Service> _displayedServices = new List<Service> {new Service
-    {
-        Method = HttpMethods.POST, Name = "SAmple", Timeout = 15, ID = 999, URI = new Uri("http://example.com")
-    }, new Service {Method = HttpMethods.GET, Name = "SAmple2", Timeout = 15, ID = 998, URI = new Uri("http://example.com")}};
+    private List<DB.Models.Service> _displayedServices = null;
 
-    public ServicesView()
+    protected override async Task OnInitializedAsync()
     {
-        RefreshDisplayedServices();
+        //little hack to make sure to break free from render loop
+        await Task.Delay(1);
+        await RefreshDisplayedServices();
+
     }
 
-    private async void RefreshDisplayedServices()
+    private async Task RefreshDisplayedServices()
     {
         _displayedServices = await App.ServicesDb.GetServicesAsync();
         StateHasChanged();

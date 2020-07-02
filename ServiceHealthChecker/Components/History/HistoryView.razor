@@ -1,25 +1,42 @@
-﻿@foreach(var log in probingLogs)
+﻿@if (probingLogs == null)
 {
-    <Frame>
-        <Label Text="@($"Name: {log.UsedUri.ToString()}")" />
-    </Frame>
+    <ActivityIndicator IsRunning="true" />
 }
+else
+{
+    @foreach (var log in probingLogs)
+    {
+        <Frame>
+            <Label Text="@($"Name: {log.ServiceName}\n" +
+                       $"URL: {log.UsedUri.ToString()}\n" +
+                       $"Method: {log.UsedMethod}\n" +
+                       $"Expected response: {log.ExpectedResponseCode}\n" +
+                       $"Got response: {log.ReceivedResponseCode}")" />
+        </Frame>
+    }
+}
+
 
 @using System.Collections.ObjectModel;
 @using ServiceHealthChecker.DB.Models;
 @using System.Threading;
 @code {
-    private List<ProbingLog> probingLogs = new List<ProbingLog>();
-    private Semaphore refreshSemaphore = new Semaphore(0, 1);
+    private List<ProbingLog> probingLogs = null;
 
-    public HistoryView()
+
+    protected override async Task OnInitializedAsync()
     {
-        RefreshLogs();
+        //little hack to make sure to break free from render loop
+        await Task.Delay(1);
+        await RefreshLogs();
+
     }
 
-    private async void RefreshLogs()
+    //todo merge if not used elsewhere
+    private async Task RefreshLogs()
     {
         probingLogs = await App.LogsDb.GetProbingLogsAsync();
         StateHasChanged();
+
     }
 }

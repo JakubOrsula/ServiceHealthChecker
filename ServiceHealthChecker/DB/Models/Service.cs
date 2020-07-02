@@ -28,6 +28,7 @@ namespace ServiceHealthChecker.DB.Models
         public string Name { get; set; }
         public Uri URI { get; set; }
         public HttpMethods Method { get; set; }
+        //todo rename to expected response
         public HttpStatusCode ExpectedCode { get; set; } = HttpStatusCode.OK;
         
         //todo remove the following prop

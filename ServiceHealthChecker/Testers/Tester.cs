@@ -1,7 +1,4 @@
 ﻿using ServiceHealthChecker.DB.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 
@@ -17,7 +14,7 @@ namespace ServiceHealthChecker.Testers
                 ServiceName = service.Name,
                 UsedUri = service.URI,
                 UsedMethod = service.Method,
-                UsedExpectedCode = service.ExpectedCode,
+                ExpectedResponseCode = service.ExpectedCode,
                 UsedTimeout = service.Timeout,
                 Status = ServiceStatus.Untested
             };
@@ -26,6 +23,7 @@ namespace ServiceHealthChecker.Testers
             {
                 switch (service.Method)
                 {
+                    //todo implement other methods
                     case HttpMethods.GET:
                         response = await httpClient.GetAsync(service.URI);
                         break;
@@ -34,27 +32,32 @@ namespace ServiceHealthChecker.Testers
             catch (HttpRequestException e)
             {
                 res.Status = ServiceStatus.NetworkError;
+                res.ReceivedResponseCode = response.StatusCode;
                 return res;
             }
             catch (TaskCanceledException e)
             {
                 res.Status = ServiceStatus.Timeout;
+                res.ReceivedResponseCode = response.StatusCode;
                 return res;
             }
 
             if (response == null)
             {
                 res.Status = ServiceStatus.NetworkError;
+                res.ReceivedResponseCode = response.StatusCode;
                 return res;
             }
 
             if (response.StatusCode != service.ExpectedCode)
             {
                 res.Status = ServiceStatus.ValidationError;
+                res.ReceivedResponseCode = response.StatusCode;
                 return res;
             }
 
             res.Status = ServiceStatus.AliveAndWell;
+            res.ReceivedResponseCode = response.StatusCode;
             return res;
         }
     }
