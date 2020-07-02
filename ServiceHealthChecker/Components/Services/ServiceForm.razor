@@ -7,6 +7,12 @@
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="URIstring" />
 
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        <Button Text="GET" OnClick="@(() => newService.Method = DB.Models.HttpMethods.GET)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.GET)" />
+        <Button Text="POST" OnClick="@(() => newService.Method = DB.Models.HttpMethods.POST)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.POST)" />
+        <Button Text="PUT" OnClick="@(() => newService.Method = DB.Models.HttpMethods.PUT)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.PUT)" />
+        <Button Text="DELETE" OnClick="@(() => newService.Method = DB.Models.HttpMethods.DELETE)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.DELETE)" />
+    </StackLayout>
     @*<Entry Placeholder="Method"
         ClearButtonVisibility="ClearButtonVisibility.WhileEditing"
         @bind-Text="@(newService.Method.ToString())" /> todo add picker *@
