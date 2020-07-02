@@ -1,0 +1,63 @@
+@using ServiceHealthChecker.DB.Models
+
+@if (selectedService != null)
+{
+    <ServiceDetailPage service="@selectedService" GoBack="@(() => selectedService = null)" />
+}
+else
+{
+    @switch (serviceView)
+    {
+        case ServiceViews.ViewList:
+            @foreach (var service in _displayedServices)
+            {
+                <ServiceHealthChecker.Components.Services.ServiceSlot service=@service @key=@service.ID ServiceSelected="@((Service s) => selectedService = s)"/>
+            }
+            <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)">Create new service</Button>
+            break;
+        case ServiceViews.CreateNew:
+            <ServiceForm newService="@(new DB.Models.Service {
+                                 Method = DB.Models.HttpMethods.GET,
+                                 Name = "new service",
+                                 URI = new Uri("https://example.com/")
+                             })"
+                         DoneCallback="@(() => serviceView = ServiceViews.ViewList)" />
+            break;
+    }
+}
+
+
+
+
+
+
+@code
+{
+    private enum ServiceViews
+    {
+        ViewList,
+        ViewDetail,
+        CreateNew
+    }
+
+    private ServiceViews serviceView = ServiceViews.ViewList;
+
+    private Service selectedService = null;
+
+    private List<DB.Models.Service> _displayedServices = new List<Service> {new Service
+    {
+        Method = HttpMethods.POST, Name = "SAmple", Timeout = 15, ID = 999, URI = new Uri("http://example.com")
+    }, new Service {Method = HttpMethods.GET, Name = "SAmple2", Timeout = 15, ID = 998, URI = new Uri("http://example.com")}};
+
+    public ServicesView()
+    {
+        RefreshDisplayedServices();
+    }
+
+    private async void RefreshDisplayedServices()
+    {
+        _displayedServices = await App.ServicesDb.GetServicesAsync();
+        StateHasChanged();
+    }
+
+}

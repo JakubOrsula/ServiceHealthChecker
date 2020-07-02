@@ -1,0 +1,38 @@
+﻿@using ServiceHealthChecker.DB.Models
+
+    <Frame>
+        <StackLayout>
+            <StackLayout Orientation="XF.StackOrientation.Horizontal">
+                <Label Text=@service.Name />
+                <Label Text=@service.Status.ToString() />
+            </StackLayout>
+            <StackLayout Orientation="XF.StackOrientation.Horizontal">
+                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(service)) IsEnabled=@(!isProbing) />
+                <Button Text="Probe" OnClick=@probeService IsEnabled=@(!isProbing) />
+                <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
+            </StackLayout>
+        </StackLayout>
+    </Frame>
+
+@code
+{
+    [Parameter]
+    public Service service { get; set; }
+
+    [Parameter]
+    public EventCallback<Service> ServiceSelected { get; set; }
+
+    private bool isProbing;
+
+    private async void probeService()
+    {
+        isProbing = true;
+
+        //todo do some renaming for the love of god
+        var result = await Testers.Tester.TestService(service);
+        service.Status = result;
+        await App.ServicesDb.SaveServiceAsync(service);
+        isProbing = false;
+        StateHasChanged();
+    }
+}

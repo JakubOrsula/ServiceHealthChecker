@@ -1,0 +1,12 @@
+﻿<StackLayout Orientation="XF.StackOrientation.Horizontal">
+    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.Validators))">Validators</Button>
+    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.Services))">Services</Button>
+    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.History))">History</Button>
+</StackLayout>
+
+@code {
+    
+    [Parameter]
+    public EventCallback<Homepage.AvailableViews> OnNavigationClickCallback { get; set; }
+
+}

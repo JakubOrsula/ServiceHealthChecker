@@ -1,0 +1,62 @@
+﻿<StackLayout HorizontalOptions="XF.LayoutOptions.StartAndExpand">
+    <Entry Placeholder="Name"
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+           @bind-Text="newService.Name" />
+
+    <Entry Placeholder="URI"
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+           @bind-Text="URIstring" />
+
+    @*<Entry Placeholder="Method"
+        ClearButtonVisibility="ClearButtonVisibility.WhileEditing"
+        @bind-Text="@(newService.Method.ToString())" /> todo add picker *@
+
+
+
+
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        <Button Text="Save"
+                IsEnabled="@(!isSaving)"
+                OnClick="@OnSaveServiceButtonClicked" />
+        <Button IsEnabled="@(!isSaving)"
+                OnClick="@DoneCallback">Abort
+        </Button>
+        <ActivityIndicator IsVisible="isSaving" IsRunning="true" />
+    </StackLayout>
+
+
+</StackLayout>
+
+
+@using ServiceHealthChecker;
+@code {
+    private string URIstring;
+
+    private bool isSaving;
+
+    [Parameter]
+    public DB.Models.Service newService { get; set; }
+
+    [Parameter]
+    public EventCallback DoneCallback { get; set; }
+
+    //todo research possible speedups by using async programming
+    private async void OnSaveServiceButtonClicked()
+    {
+        isSaving = true;
+        if (Uri.TryCreate(URIstring, UriKind.Absolute, out var apiUrl)
+            && (apiUrl.Scheme == Uri.UriSchemeHttp || apiUrl.Scheme == Uri.UriSchemeHttps))
+        {
+            newService.URI = apiUrl;
+        }
+
+        //todo whats the point of async db if im syncing all calls
+        await App.ServicesDb.SaveServiceAsync(newService);
+
+        newService = new DB.Models.Service();
+        isSaving = false;
+        StateHasChanged(); //todo depending on expected behaviour purge this or donecallback
+        DoneCallback.InvokeAsync(this);
+
+    }
+}

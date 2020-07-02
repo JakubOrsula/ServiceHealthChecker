@@ -1,0 +1,13 @@
+﻿<Label Text=@service.Name />
+<Label Text=@($"Method: {service.Method}") />
+<Button OnClick="@GoBack" Text="Go back" />
+
+@code {
+
+    [Parameter]
+    public DB.Models.Service service { get; set; }
+
+    [Parameter]
+    public EventCallback GoBack { get; set; }
+
+}
