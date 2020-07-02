@@ -7,7 +7,8 @@ namespace ServiceHealthChecker
     {
         public const int DefaultTimeout = 15;
         
-        public const string DatabaseFilename = "ServicesDB.db3";
+        public const string ServicesDatabaseFilename = "ServicesDB.db3";
+        public const string LogsDatabaseFilename = "LogsDB.db3";
 
         public const SQLite.SQLiteOpenFlags Flags =
             // open the database in read/write mode
@@ -17,12 +18,21 @@ namespace ServiceHealthChecker
             // enable multi-threaded database access
             SQLite.SQLiteOpenFlags.SharedCache;
 
-        public static string DatabasePath
+        public static string ServicesDatabasePath
         {
             get
             {
                 var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                return Path.Combine(basePath, DatabaseFilename);
+                return Path.Combine(basePath, ServicesDatabaseFilename);
+            }
+        }
+        
+        public static string LogsDatabasePath
+        {
+            get
+            {
+                var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                return Path.Combine(basePath, LogsDatabaseFilename);
             }
         }
     }

@@ -12,7 +12,7 @@ namespace ServiceHealthChecker.DB
 
         public ServicesDatabase()
         {
-            database = new SQLiteAsyncConnection(Constants.DatabasePath);
+            database = new SQLiteAsyncConnection(Constants.ServicesDatabasePath);
             database.CreateTableAsync<Service>().Wait();
         }
 
@@ -24,22 +24,22 @@ namespace ServiceHealthChecker.DB
         public Task<Service> GetServiceAsync(int id)
         {
             return database.Table<Service>()
-                .Where(target => target.ID == id)
+                .Where(service => service.ID == id)
                 .FirstOrDefaultAsync();
         }
 
-        public Task<int> SaveServiceAsync(Service target)
+        public Task<int> SaveServiceAsync(Service service)
         {
-            if (target.ID != 0)
+            if (service.ID != 0)
             {
-                return database.UpdateAsync(target);
+                return database.UpdateAsync(service);
             }
-            return database.InsertAsync(target);
+            return database.InsertAsync(service);
         }
         
-        public Task<int> DeleteServiceAsync(Service target)
+        public Task<int> DeleteServiceAsync(Service service)
         {
-            return database.DeleteAsync(target);
+            return database.DeleteAsync(service);
         }
         
         public Task DeleteServicesAsync()
