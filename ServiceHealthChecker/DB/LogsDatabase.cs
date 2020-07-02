@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ServiceHealthChecker.DB.Models;
 using SQLite;
@@ -15,9 +16,13 @@ namespace ServiceHealthChecker.DB
             database.CreateTableAsync<ProbingLog>().Wait();
         }
 
-        public Task<List<ProbingLog>> GetProbingLogsAsync()
+        public Task<List<ProbingLog>> GetProbingLogsAsync(int ServiceId = 0)
         {
-            return database.Table<ProbingLog>().ToListAsync();
+            if (ServiceId == 0)
+            {
+                return database.Table<ProbingLog>().ToListAsync();
+            }
+            return database.Table<ProbingLog>().Where(log => log.ServiceID == ServiceId).ToListAsync();
         }
 
         public Task<ProbingLog> GetProbingLogAsync(int id)

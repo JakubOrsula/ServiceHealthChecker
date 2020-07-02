@@ -30,9 +30,6 @@ namespace ServiceHealthChecker.DB.Models
         public HttpMethods Method { get; set; }
         //todo rename to expected response
         public HttpStatusCode ExpectedCode { get; set; } = HttpStatusCode.OK;
-        
-        //todo remove the following prop
-        public ServiceStatus Status { get; set; } = ServiceStatus.Untested;
         public int Timeout { get; set; } = Constants.DefaultTimeout; //timeout in seconds
 
     }

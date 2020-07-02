@@ -11,6 +11,7 @@ namespace ServiceHealthChecker.Testers
         {
             var res = new ProbingLog
             {
+                ServiceID = service.ID,
                 ServiceName = service.Name,
                 UsedUri = service.URI,
                 UsedMethod = service.Method,

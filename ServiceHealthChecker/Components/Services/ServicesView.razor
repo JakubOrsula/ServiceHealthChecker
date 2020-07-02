@@ -17,7 +17,7 @@ else
             case ServiceViews.ViewList:
                 @foreach (var service in _displayedServices)
                 {
-                    <ServiceHealthChecker.Components.Services.ServiceSlot service=@service @key=@service.ID ServiceSelected="@((Service s) => selectedService = s)" />
+                    <ServiceHealthChecker.Components.Services.ServiceSlot service=@service ServiceSelected="@((Service s) => selectedService = s)" />
                 }
                 <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)">Create new service</Button>
                 break;
@@ -27,7 +27,7 @@ else
                                  Name = "new service",
                                  URI = new Uri("https://example.com/")
                              })"
-                             DoneCallback="@(() => serviceView = ServiceViews.ViewList)" />
+                             DoneCallback="@(() => { serviceView = ServiceViews.ViewList; RefreshDisplayedServices(); })" />
                 break;
         }
     }
@@ -47,7 +47,7 @@ else
 
     private Service selectedService = null;
 
-    private List<DB.Models.Service> _displayedServices = null;
+    private List<(DB.Models.Service, ProbingLog)> _displayedServices = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +59,13 @@ else
 
     private async Task RefreshDisplayedServices()
     {
-        _displayedServices = await App.ServicesDb.GetServicesAsync();
+        var services = await App.ServicesDb.GetServicesAsync();
+
+        _displayedServices = (await Task
+            .WhenAll(services
+            .Select(s => App.LogsDb.GetProbingLogsAsync(s.ID)
+            .ContinueWith(lastLog => (s, lastLog.Result.FirstOrDefault() ?? new ProbingLog())))))
+            .ToList();
         StateHasChanged();
     }
 

@@ -3,11 +3,11 @@
     <Frame>
         <StackLayout>
             <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Label Text=@service.Name />
-                <Label Text=@service.Status.ToString() />
+                <Label Text=@service.Item1.Name />
+                <Label Text=@service.Item2.Status.ToString() />
             </StackLayout>
             <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(service)) IsEnabled=@(!isProbing) />
+                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(service.Item1)) IsEnabled=@(!isProbing) />
                 <Button Text="Probe" OnClick=@probeService IsEnabled=@(!isProbing) />
                 <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
             </StackLayout>
@@ -16,8 +16,9 @@
 
 @code
 {
+    //todo rename
     [Parameter]
-    public Service service { get; set; }
+    public (Service, ProbingLog) service { get; set; }
 
     [Parameter]
     public EventCallback<Service> ServiceSelected { get; set; }
@@ -29,8 +30,7 @@
         isProbing = true;
 
         //todo do some renaming for the love of god
-        var result = await Testers.Tester.TestService(service);
-        service.Status = result.Status;
+        var result = await Testers.Tester.TestService(service.Item1);
         await App.LogsDb.SaveProbingLogAsync(result);
         isProbing = false;
         StateHasChanged();
