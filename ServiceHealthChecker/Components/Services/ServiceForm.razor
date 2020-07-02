@@ -3,7 +3,7 @@
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="newService.Name" />
 
-    <Entry Placeholder="URI"
+    <Entry Placeholder="@(newService.URI.ToString())"
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="URIstring" />
 
@@ -13,10 +13,13 @@
         <Button Text="PUT" OnClick="@(() => newService.Method = DB.Models.HttpMethods.PUT)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.PUT)" />
         <Button Text="DELETE" OnClick="@(() => newService.Method = DB.Models.HttpMethods.DELETE)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.DELETE)" />
     </StackLayout>
-    @*<Entry Placeholder="Method"
-        ClearButtonVisibility="ClearButtonVisibility.WhileEditing"
-        @bind-Text="@(newService.Method.ToString())" /> todo add picker *@
 
+    <Entry Placeholder="@(((int)newService.ExpectedCode).ToString())"
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+           @bind-Text="ResponseCodeString" />
+
+
+    <Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" />
 
 
 
@@ -25,7 +28,8 @@
                 IsEnabled="@(!isSaving)"
                 OnClick="@OnSaveServiceButtonClicked" />
         <Button IsEnabled="@(!isSaving)"
-                OnClick="@DoneCallback">Abort
+                OnClick="@DoneCallback">
+            Abort
         </Button>
         <ActivityIndicator IsVisible="isSaving" IsRunning="true" />
     </StackLayout>
@@ -35,10 +39,8 @@
 
 
 @using ServiceHealthChecker;
+@using System.Net;
 @code {
-    private string URIstring;
-
-    private bool isSaving;
 
     [Parameter]
     public DB.Models.Service newService { get; set; }
@@ -46,23 +48,67 @@
     [Parameter]
     public EventCallback DoneCallback { get; set; }
 
+    private string URIstring = "";
+
+    private string ResponseCodeString = "";
+
+    private string ErrorsInString = "";
+
+    private bool isSaving;
+
     //todo research possible speedups by using async programming
     private async void OnSaveServiceButtonClicked()
     {
         isSaving = true;
-        if (Uri.TryCreate(URIstring, UriKind.Absolute, out var apiUrl)
-            && (apiUrl.Scheme == Uri.UriSchemeHttp || apiUrl.Scheme == Uri.UriSchemeHttps))
+        ErrorsInString = "";
+        if (URIstring.Length > 0)
         {
-            newService.URI = apiUrl;
+            if (Uri.TryCreate(URIstring, UriKind.Absolute, out var apiUrl))
+            {
+                if (apiUrl.Scheme == Uri.UriSchemeHttps)
+                {
+                    newService.URI = apiUrl;
+                }
+                else
+                {
+                    ErrorsInString += "Cleartext traffic is not allowed\n";
+                }
+            }
+            else
+            {
+                ErrorsInString += "Couldn't parse your url\n";
+
+            }
         }
 
-        //todo whats the point of async db if im syncing all calls
-        await App.ServicesDb.SaveServiceAsync(newService);
+        if (ResponseCodeString.Length > 0)
+        {
+            if (int.TryParse(ResponseCodeString, out var responseCode) && Enum.IsDefined(typeof(HttpStatusCode), responseCode))
+            {
+                newService.ExpectedCode = (HttpStatusCode)responseCode;
+            }
+            else
+            {
+                ErrorsInString += "Response code invalid\n";
+            }
+        }
 
-        newService = new DB.Models.Service();
-        isSaving = false;
-        StateHasChanged(); //todo depending on expected behaviour purge this or donecallback
-        DoneCallback.InvokeAsync(this);
+        if (ErrorsInString.Length == 0)
+        {
+            //todo whats the point of async db if im syncing all calls
+            await App.ServicesDb.SaveServiceAsync(newService);
+
+            //newService = new DB.Models.Service();
+            isSaving = false;
+            StateHasChanged(); //todo depending on expected behaviour purge this or donecallback
+            DoneCallback.InvokeAsync(this);
+        }
+        else
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+
 
     }
 }
