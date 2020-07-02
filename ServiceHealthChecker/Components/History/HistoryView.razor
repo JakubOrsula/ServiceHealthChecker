@@ -6,12 +6,13 @@ else
 {
     @foreach (var log in probingLogs)
     {
-        <Frame>
+        <Frame BackgroundColor="@(log.Status == ServiceStatus.AliveAndWell ? Palette.Success: Palette.Danger)" >
             <Label Text="@($"Name: {log.ServiceName}\n" +
                        $"URL: {log.UsedUri.ToString()}\n" +
                        $"Method: {log.UsedMethod}\n" +
                        $"Expected response: {log.ExpectedResponseCode}\n" +
-                       $"Got response: {log.ReceivedResponseCode}")" />
+                       $"Got response: {log.ReceivedResponseCode}\n" +
+                       $"Result: {log.Status}")" />
         </Frame>
     }
 }

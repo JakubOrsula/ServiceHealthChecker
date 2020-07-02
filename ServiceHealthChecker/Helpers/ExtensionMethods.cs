@@ -11,5 +11,10 @@ namespace ServiceHealthChecker.Helpers
         {
             return "";
         }
+
+        //public static bool Success(this ProbingLog log)
+        //{
+        //    if (log.Status == ServiceStatus.)
+        //}
     }
 }
