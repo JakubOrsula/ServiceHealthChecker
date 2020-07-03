@@ -16,5 +16,10 @@ namespace ServiceHealthChecker.Helpers
         //{
         //    if (log.Status == ServiceStatus.)
         //}
+
+        public static string CustomToString(this TimeSpan tspn)
+        {
+            return $"{Math.Floor(tspn.TotalSeconds)}.{tspn.Milliseconds}s";
+        }
     }
 }

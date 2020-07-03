@@ -22,7 +22,10 @@ namespace ServiceHealthChecker.DB
             {
                 return database.Table<ProbingLog>().ToListAsync();
             }
-            return database.Table<ProbingLog>().Where(log => log.ServiceID == ServiceId).ToListAsync();
+            return database.Table<ProbingLog>()
+                .Where(log => log.ServiceID == ServiceId)
+                .OrderByDescending(log => log.ID)
+                .ToListAsync();
         }
 
         public Task<ProbingLog> GetProbingLogAsync(int id)

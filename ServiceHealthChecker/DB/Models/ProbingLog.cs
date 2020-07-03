@@ -16,6 +16,8 @@ namespace ServiceHealthChecker.DB.Models
         public HttpMethods UsedMethod { get; set; }
         public HttpStatusCode ExpectedResponseCode { get; set; }
         public HttpStatusCode ReceivedResponseCode { get; set; }
+        public DateTime RequestStart { get; set; }
+        public DateTime RequestFinish { get; set; } = DateTime.MaxValue;
         public ServiceStatus Status { get; set; } = ServiceStatus.Untested;
         public int UsedTimeout { get; set; } = Constants.DefaultTimeout;
     }

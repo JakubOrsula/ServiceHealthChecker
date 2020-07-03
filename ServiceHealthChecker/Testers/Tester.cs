@@ -1,15 +1,27 @@
 ﻿using ServiceHealthChecker.DB.Models;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System;
+using Xamarin.Forms.Internals;
+using System.Threading;
 
 namespace ServiceHealthChecker.Testers
 {
     public static class Tester
     {
         private static HttpClient httpClient = new HttpClient();
+
+        private static void HandleRequestFinish(ref ProbingLog log, ref HttpResponseMessage response)
+        {
+            log.RequestFinish = DateTime.Now;
+            log.ReceivedResponseCode = response.StatusCode;
+        }
+        
+
         public static async Task<ProbingLog> TestService(Service service)
         {
-            var res = new ProbingLog
+            CancellationTokenSource cts = new CancellationTokenSource();
+            var log = new ProbingLog
             {
                 ServiceID = service.ID,
                 ServiceName = service.Name,
@@ -20,46 +32,51 @@ namespace ServiceHealthChecker.Testers
                 Status = ServiceStatus.Untested
             };
             HttpResponseMessage response = null;
+            log.RequestStart = DateTime.Now;
+            Task.Run(async () => { await Task.Delay(service.Timeout * 1000); cts.Cancel(); });
             try
             {
                 switch (service.Method)
                 {
                     //todo implement other methods
                     case HttpMethods.GET:
-                        response = await httpClient.GetAsync(service.URI);
+                        response = await httpClient.GetAsync(service.URI, cts.Token);
                         break;
                 }
             }
             catch (HttpRequestException e)
             {
-                res.Status = ServiceStatus.NetworkError;
-                res.ReceivedResponseCode = response.StatusCode;
-                return res;
+                HandleRequestFinish(ref log, ref response);
+                log.Status = ServiceStatus.NetworkError;
+                return log;
             }
             catch (TaskCanceledException e)
             {
-                res.Status = ServiceStatus.Timeout;
-                res.ReceivedResponseCode = response.StatusCode;
-                return res;
+                log.Status = ServiceStatus.Timeout;
+                return log;
+            }
+            catch(Exception e) //theres a bug in mono wich causes timout to be thrown as antive exception and I cannot catch it otherwise
+            {
+                log.Status = ServiceStatus.Timeout;
+                return log;
             }
 
-            if (response == null)
+            if (response == null) //should never happen and will throw nullexcpetion
             {
-                res.Status = ServiceStatus.NetworkError;
-                res.ReceivedResponseCode = response.StatusCode;
-                return res;
+                log.Status = ServiceStatus.NetworkError;
+                return log;
             }
 
             if (response.StatusCode != service.ExpectedCode)
             {
-                res.Status = ServiceStatus.ValidationError;
-                res.ReceivedResponseCode = response.StatusCode;
-                return res;
+                HandleRequestFinish(ref log, ref response);
+                log.Status = ServiceStatus.ValidationError;
+                return log;
             }
 
-            res.Status = ServiceStatus.AliveAndWell;
-            res.ReceivedResponseCode = response.StatusCode;
-            return res;
+            HandleRequestFinish(ref log, ref response);
+            log.Status = ServiceStatus.AliveAndWell;
+            return log;
         }
     }
 }

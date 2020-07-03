@@ -61,6 +61,7 @@ else
     {
         var services = await App.ServicesDb.GetServicesAsync();
 
+        //todo add and order by date (or order globally like that)
         _displayedServices = (await Task
             .WhenAll(services
             .Select(s => App.LogsDb.GetProbingLogsAsync(s.ID)
