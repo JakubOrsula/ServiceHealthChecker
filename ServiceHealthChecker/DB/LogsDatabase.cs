@@ -20,7 +20,7 @@ namespace ServiceHealthChecker.DB
         {
             if (ServiceId == 0)
             {
-                return database.Table<ProbingLog>().ToListAsync();
+                return database.Table<ProbingLog>().OrderByDescending(log => log.ID).ToListAsync();
             }
             return database.Table<ProbingLog>()
                 .Where(log => log.ServiceID == ServiceId)

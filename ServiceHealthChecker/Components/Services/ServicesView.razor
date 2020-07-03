@@ -33,7 +33,7 @@ else
     }
 }
 
-
+@using ServiceHealthChecker.DB.Models;
 @code
 {
     private enum ServiceViews
@@ -47,7 +47,7 @@ else
 
     private Service selectedService = null;
 
-    private List<(DB.Models.Service, ProbingLog)> _displayedServices = null;
+    private List<Service> _displayedServices = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,11 +62,7 @@ else
         var services = await App.ServicesDb.GetServicesAsync();
 
         //todo add and order by date (or order globally like that)
-        _displayedServices = (await Task
-            .WhenAll(services
-            .Select(s => App.LogsDb.GetProbingLogsAsync(s.ID)
-            .ContinueWith(lastLog => (s, lastLog.Result.FirstOrDefault() ?? new ProbingLog())))))
-            .ToList();
+        _displayedServices = services.ToList();
         StateHasChanged();
     }
 

@@ -3,11 +3,18 @@
     <Frame>
         <StackLayout>
             <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Label Text=@service.Item1.Name />
-                <Label Text=@service.Item2.Status.ToString() />
+                <Label Text=@service.Name />
+                @if (info == null)
+                {
+                    <ActivityIndicator IsRunning="true" />
+                }
+                else
+                {
+                    <Label Text=@info.Status.ToString() />
+                }
             </StackLayout>
             <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(service.Item1)) IsEnabled=@(!isProbing) />
+                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(service)) IsEnabled=@(!isProbing) />
                 <Button Text="Probe" OnClick=@probeService IsEnabled=@(!isProbing) />
                 <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
             </StackLayout>
@@ -18,10 +25,12 @@
 {
     //todo rename
     [Parameter]
-    public (Service, ProbingLog) service { get; set; }
+    public Service service { get; set; }
 
     [Parameter]
     public EventCallback<Service> ServiceSelected { get; set; }
+
+    private ProbingLog info = null;
 
     private bool isProbing;
 
@@ -30,9 +39,23 @@
         isProbing = true;
 
         //todo do some renaming for the love of god
-        var result = await Testers.Tester.TestService(service.Item1);
+        var result = await Testers.Tester.TestService(service);
         await App.LogsDb.SaveProbingLogAsync(result);
         isProbing = false;
+        RefreshInfo();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //little hack to make sure to break free from render loop
+        await Task.Delay(1);
+        await RefreshInfo();
+
+    }
+
+    private async Task RefreshInfo()
+    {
+        info = (await App.LogsDb.GetProbingLogsAsync(service.ID)).FirstOrDefault() ?? new ProbingLog();
         StateHasChanged();
     }
 }
