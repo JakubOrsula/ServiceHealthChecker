@@ -14,15 +14,20 @@
         <Button Text="DELETE" OnClick="@(() => newService.Method = DB.Models.HttpMethods.DELETE)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.DELETE)" />
     </StackLayout>
 
+
+
+
     <Entry Placeholder="@(((int)newService.ExpectedCode).ToString())"
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="ResponseCodeString" />
 
 
+
+    @* ERRORS ARE HERE *@
     <Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" />
 
 
-
+    @* MAIN CONTROLS *@
     <StackLayout Orientation="XF.StackOrientation.Horizontal">
         <Button Text="Save"
                 IsEnabled="@(!isSaving)"

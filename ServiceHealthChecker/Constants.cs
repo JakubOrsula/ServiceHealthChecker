@@ -22,6 +22,7 @@ namespace ServiceHealthChecker
         
         public const string ServicesDatabaseFilename = "ServicesDB.db3";
         public const string LogsDatabaseFilename = "LogsDB.db3";
+        public const string ServiceHeadersDatabaseFilename = "ServiceHeadersDB.db3";
 
         public const SQLite.SQLiteOpenFlags Flags =
             // open the database in read/write mode
@@ -46,6 +47,15 @@ namespace ServiceHealthChecker
             {
                 var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 return Path.Combine(basePath, LogsDatabaseFilename);
+            }
+        }
+
+        public static string ServiceHeadersDatabasePath
+        {
+            get
+            {
+                var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                return Path.Combine(basePath, ServiceHeadersDatabaseFilename);
             }
         }
     }
