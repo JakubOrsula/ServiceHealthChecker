@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System;
+using System.Net.Http.Headers;
 using Xamarin.Forms.Internals;
 using System.Threading;
+using ServiceHealthChecker.Helpers;
 
 namespace ServiceHealthChecker.Testers
 {
@@ -34,15 +36,17 @@ namespace ServiceHealthChecker.Testers
             HttpResponseMessage response = null;
             log.RequestStart = DateTime.Now;
             Task.Run(async () => { await Task.Delay(service.Timeout * 1000); cts.Cancel(); });
+
+
+            var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.URI);
+            foreach(var item in service.Headers)
+            {
+                request.Headers.Add(item.Key, item.Value);
+            }
+
             try
             {
-                switch (service.Method)
-                {
-                    //todo implement other methods
-                    case HttpMethods.GET:
-                        response = await httpClient.GetAsync(service.URI, cts.Token);
-                        break;
-                }
+                response = await httpClient.SendAsync(request, cts.Token);
             }
             catch (HttpRequestException e)
             {

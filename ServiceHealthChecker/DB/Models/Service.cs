@@ -32,10 +32,22 @@ namespace ServiceHealthChecker.DB.Models
         public HttpMethods Method { get; set; }
 
         [OneToMany]
-        public List<ServiceHeaders> Headers { get; set; } = new List<ServiceHeaders>();
+        public List<ServiceHeaders> Headers { get; set; }
         //todo rename to expected response
         public HttpStatusCode ExpectedCode { get; set; } = HttpStatusCode.OK;
         public int Timeout { get; set; } = Constants.DefaultTimeout; //timeout in seconds
+
+        public Service()
+        {
+            Headers = new List<ServiceHeaders>
+            {
+                new ServiceHeaders
+                {
+                    Key = "User-Agent",
+                    Value = "ServiceHealthChecker"
+                }
+            };
+        }
 
     }
 }

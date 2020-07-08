@@ -11,6 +11,7 @@ else
     <Label Text="Validation:" />
     <Label Text=@($"Expected response: {service.ExpectedCode}") />
     <Button OnClick="@(() => serviceToEdit = service)" Text="Edit" />
+    <Button OnClick="@DeleteService" Text="Delete" />
     <Button OnClick="@GoBack" Text="Go back" />
     <Label Text="History:" />
     <ServiceHealthChecker.Components.History.HistoryView ServiceId="@service.ID" />
@@ -27,5 +28,11 @@ else
     public EventCallback GoBack { get; set; }
 
     private ServiceHealthChecker.DB.Models.Service serviceToEdit = null;
+
+    private async Task DeleteService()
+    {
+        await App.ServicesDb.DeleteServiceAsync(service);
+        await GoBack.InvokeAsync(EventCallback.Empty);
+    }
 
 }

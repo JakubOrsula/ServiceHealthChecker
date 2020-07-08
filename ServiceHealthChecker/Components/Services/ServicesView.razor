@@ -17,13 +17,13 @@ else
             case ServiceViews.ViewList:
                 @foreach (var service in _displayedServices)
                 {
-                    <ServiceHealthChecker.Components.Services.ServiceSlot service=@service ServiceSelected="@((Service s) => selectedService = s)" />
+                    <ServiceHealthChecker.Components.Services.ServiceSlot @key=@service service=@service ServiceSelected="@((Service s) => selectedService = s)" />
                 }
                 <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)">Create new service</Button>
                 break;
             case ServiceViews.CreateNew:
                 <ServiceForm newService="@(new DB.Models.Service {
-                                 Method = DB.Models.HttpMethods.GET,
+                                 Method = HttpMethods.GET,
                                  Name = "new service",
                                  URI = new Uri("https://example.com/")
                              })"
@@ -33,7 +33,6 @@ else
     }
 }
 
-@using ServiceHealthChecker.DB.Models;
 @code
 {
     private enum ServiceViews
@@ -53,6 +52,7 @@ else
     {
         //little hack to make sure to break free from render loop
         await Task.Delay(1);
+        App.ServicesDb.ServiceDeleted += (_, __) => RefreshDisplayedServices();
         await RefreshDisplayedServices();
 
     }
@@ -61,8 +61,14 @@ else
     {
         var services = await App.ServicesDb.GetServicesAsync();
 
-        //todo add and order by date (or order globally like that)
-        _displayedServices = services.ToList();
+        if (_displayedServices == null)
+        {
+            _displayedServices = services.ToList();
+        } else
+        {
+            _displayedServices.Clear();
+            _displayedServices.AddRange(services.ToList());
+        }
         StateHasChanged();
     }
 

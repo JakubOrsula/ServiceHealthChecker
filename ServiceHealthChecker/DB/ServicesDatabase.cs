@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ServiceHealthChecker.DB.Models;
 using SQLite;
@@ -9,6 +10,8 @@ namespace ServiceHealthChecker.DB
     public class ServicesDatabase
     {
         readonly SQLiteAsyncConnection database;
+
+        public event EventHandler ServiceDeleted; //todo add handler suffix and consider not using it
 
         public ServicesDatabase()
         {
@@ -39,7 +42,10 @@ namespace ServiceHealthChecker.DB
         
         public Task<int> DeleteServiceAsync(Service service)
         {
-            return database.DeleteAsync(service);
+            return database.DeleteAsync(service).ContinueWith(task => {
+                ServiceDeleted?.Invoke(null, EventArgs.Empty);
+                return task.Result;
+            });
         }
         
         public Task DeleteServicesAsync()
