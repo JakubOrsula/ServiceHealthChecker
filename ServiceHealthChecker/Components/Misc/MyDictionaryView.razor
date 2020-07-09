@@ -15,7 +15,7 @@
 @code {
 
     [Parameter]
-    public List<ServiceHeaders> Entries { get; set; }
+    public IEnumerable<IMyDictionary> Entries { get; set; }
 
     [Parameter]
     public EventCallback AddEntryCallback { get; set; }

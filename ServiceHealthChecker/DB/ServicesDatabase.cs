@@ -33,10 +33,6 @@ namespace ServiceHealthChecker.DB
 
         public Task SaveServiceAsync(Service service)
         {
-            //if (service.ID != 0)
-            //{
-            //    return database.UpdateWithChildrenAsync(service);
-            //}
             return database.InsertOrReplaceWithChildrenAsync(service);
         }
         
