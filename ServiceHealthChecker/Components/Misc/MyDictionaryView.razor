@@ -5,32 +5,18 @@
                @bind-Text="@entry.Key" />
         <Entry Placeholder="Value"
                @bind-Text="@entry.Value" />
-        <Button Text="Remove" OnClick="@(() => Entries.Remove(entry))" />
     </StackLayout>
 }
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Button Text="New pair" OnClick="@(() => Entries.Add(EntryFactory()))" />
-    <Button Text="Save" OnClick="@(async () => {
-                                       saving = true;
-                                       await SaveEntries(Entries);
-                                       saving = false; //todo add statehaschanged if not enough
-                                       })" />
-    <ActivityIndicator IsVisible="saving" IsRunning="true" />
+    <Button Text="New pair" OnClick="@AddEntryCallback" />
 </StackLayout>
 
 @using ServiceHealthChecker.DB.Models;
 @code {
 
     [Parameter]
-    public List<IMyDictionary> Entries { get; set; }
+    public List<ServiceHeaders> Entries { get; set; }
 
     [Parameter]
-    public Func<IMyDictionary> EntryFactory { get; set; }
-
-    [Parameter]
-    public Func<List<IMyDictionary>, Task> SaveEntries { get; set; }
-
-    private bool saving;
-
-    //todo use EventCallback.Empty instead of new object, you also dont need to call state has changed
+    public EventCallback AddEntryCallback { get; set; }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ServiceHealthChecker.DB.Models;
 using SQLite;
+using SQLiteNetExtensionsAsync.Extensions;
 
 namespace ServiceHealthChecker.DB
 {
@@ -17,27 +18,26 @@ namespace ServiceHealthChecker.DB
         {
             database = new SQLiteAsyncConnection(Constants.ServicesDatabasePath);
             database.CreateTableAsync<Service>().Wait();
+            database.CreateTableAsync<ServiceHeaders>().Wait();
         }
 
         public Task<List<Service>> GetServicesAsync()
         {
-            return database.Table<Service>().ToListAsync();
+            return database.GetAllWithChildrenAsync<Service>();
         }
 
         public Task<Service> GetServiceAsync(int id)
         {
-            return database.Table<Service>()
-                .Where(service => service.ID == id)
-                .FirstOrDefaultAsync();
+            return database.GetWithChildrenAsync<Service>(id);
         }
 
-        public Task<int> SaveServiceAsync(Service service)
+        public Task SaveServiceAsync(Service service)
         {
             if (service.ID != 0)
             {
-                return database.UpdateAsync(service);
+                return database.UpdateWithChildrenAsync(service);
             }
-            return database.InsertAsync(service);
+            return database.InsertWithChildrenAsync(service);
         }
         
         public Task<int> DeleteServiceAsync(Service service)

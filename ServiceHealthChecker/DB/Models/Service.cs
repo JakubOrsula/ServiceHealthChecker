@@ -31,7 +31,7 @@ namespace ServiceHealthChecker.DB.Models
         public Uri URI { get; set; }
         public HttpMethods Method { get; set; }
 
-        [OneToMany]
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<ServiceHeaders> Headers { get; set; }
         //todo rename to expected response
         public HttpStatusCode ExpectedCode { get; set; } = HttpStatusCode.OK;

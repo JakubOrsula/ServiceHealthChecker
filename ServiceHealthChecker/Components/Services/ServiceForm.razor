@@ -22,14 +22,7 @@
         <Button Text="Headers >" OnClick="@(() => showMask ^= (1 << (int) Sections.Headers))" />
         @if ((showMask & (1 << (int)Sections.Headers)) != 0)
         {
-            @foreach (var header in newService.Headers)
-            {
-                <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                    <Entry @bind-Text="@(header.Key)" />
-                    <Entry @bind-Text="@(header.Value)" />
-                </StackLayout>
-            }
-            <Button Text="Add header" OnClick=@(() => newService.Headers.Add(new ServiceHeaders())) />
+            <ServiceHealthChecker.Components.Misc.MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new ServiceHeaders())) />
         }
 
 
