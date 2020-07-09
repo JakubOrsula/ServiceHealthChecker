@@ -19,7 +19,8 @@ namespace ServiceHealthChecker.DB
             database = new SQLiteAsyncConnection(Constants.ServicesDatabasePath);
             database.CreateTableAsync<Service>().Wait();
             database.CreateTableAsync<Header>().Wait();
-            database.CreateTableAsync<QueryParam>().Wait();
+            database.CreateTableAsync<QueryParam>().Wait(); 
+            database.CreateTableAsync<StringCollection>().Wait();
         }
 
         public Task<List<Service>> GetServicesAsync()

@@ -1,0 +1,21 @@
+﻿@foreach (var entry in Entries)
+{
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        <Entry Placeholder="Expression"
+               @bind-Text="@entry.Value" />
+    </StackLayout>
+}
+@* todo merge following with dict *@
+<StackLayout Orientation="XF.StackOrientation.Horizontal">
+    <Button Text="New expression" OnClick="@AddEntryCallback" />
+</StackLayout>
+
+@using ServiceHealthChecker.DB.Models;
+@code {
+
+    [Parameter]
+    public IEnumerable<StringCollection> Entries { get; set; }
+
+    [Parameter]
+    public EventCallback AddEntryCallback { get; set; }
+}

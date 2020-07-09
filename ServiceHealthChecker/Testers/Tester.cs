@@ -79,6 +79,8 @@ namespace ServiceHealthChecker.Testers
             }
 
             HandleRequestFinish(ref log, ref response);
+
+
             log.Status = ServiceStatus.AliveAndWell;
             return log;
         }

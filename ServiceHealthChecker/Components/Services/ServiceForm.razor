@@ -1,64 +1,71 @@
 ﻿@using ServiceHealthChecker.DB.Models
 @using ServiceHealthChecker.Components.Misc
 
-<StackLayout HorizontalOptions="XF.LayoutOptions.StartAndExpand">
-    <Entry Placeholder="Name"
-           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-           @bind-Text="newService.Name" />
+    <StackLayout HorizontalOptions="XF.LayoutOptions.StartAndExpand">
+        <Entry Placeholder="Name"
+               ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+               @bind-Text="newService.Name" />
 
-    <Entry Placeholder="@(newService.URI.ToString())"
-           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-           @bind-Text="URIstring" />
+        <Entry Placeholder="@(newService.URI.ToString())"
+               ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+               @bind-Text="URIstring" />
 
-    @* METHOD *@
-    <StackLayout Orientation="XF.StackOrientation.Horizontal">
-        <Button Text="GET" OnClick="@(() => newService.Method = DB.Models.HttpMethods.GET)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.GET)" />
-        <Button Text="POST" OnClick="@(() => newService.Method = DB.Models.HttpMethods.POST)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.POST)" />
-        <Button Text="PUT" OnClick="@(() => newService.Method = DB.Models.HttpMethods.PUT)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.PUT)" />
-        <Button Text="DELETE" OnClick="@(() => newService.Method = DB.Models.HttpMethods.DELETE)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.DELETE)" />
+        @* METHOD *@
+        <StackLayout Orientation="XF.StackOrientation.Horizontal">
+            <Button Text="GET" OnClick="@(() => newService.Method = DB.Models.HttpMethods.GET)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.GET)" />
+            <Button Text="POST" OnClick="@(() => newService.Method = DB.Models.HttpMethods.POST)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.POST)" />
+            <Button Text="PUT" OnClick="@(() => newService.Method = DB.Models.HttpMethods.PUT)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.PUT)" />
+            <Button Text="DELETE" OnClick="@(() => newService.Method = DB.Models.HttpMethods.DELETE)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.DELETE)" />
+        </StackLayout>
+
+
+        @* HEADERS *@
+        <Button Text="Headers >" OnClick="@(() => showMask ^= (1 << (int) Sections.Headers))" />
+        @if ((showMask & (1 << (int)Sections.Headers)) != 0)
+        {
+            <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header())) />
+        }
+
+        @* QUERY PARAMS *@
+        <Button Text="Query params >" OnClick="@(() => showMask ^= (1 << (int) Sections.QueryParams))" />
+        @if ((showMask & (1 << (int)Sections.QueryParams)) != 0)
+        {
+            <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
+        }
+
+        @* RESPONSE MUST CONTAIN *@
+        <Button Text="Response must conatin >" OnClick="@(() => showMask ^= (1 << (int) Sections.ResponseMustContain))" />
+        @if ((showMask & (1 << (int)Sections.ResponseMustContain)) != 0)
+        {
+            <StringCollectionView Entries=@(newService.ResponseMustContain) AddEntryCallback=@(() => newService.ResponseMustContain.Add(new StringCollection())) />
+        }
+
+
+        @* EXPECTED CODE *@
+        <Entry Placeholder="@(((int)newService.ExpectedCode).ToString())"
+               ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+               @bind-Text="ResponseCodeString" />
+
+
+
+        @* ERRORS ARE HERE *@
+        <Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" />
+
+
+        @* MAIN CONTROLS *@
+        <StackLayout Orientation=" XF.StackOrientation.Horizontal">
+            <Button Text="Save"
+                    IsEnabled="@(!isSaving)"
+                    OnClick="@OnSaveServiceButtonClicked" />
+            <Button IsEnabled="@(!isSaving)"
+                    OnClick="@DoneCallback">
+                Abort
+            </Button>
+            <ActivityIndicator IsVisible="isSaving" IsRunning="true" />
+        </StackLayout>
+
+
     </StackLayout>
-
-
-    @* HEADERS *@
-    <Button Text="Headers >" OnClick="@(() => showMask ^= (1 << (int) Sections.Headers))" />
-    @if ((showMask & (1 << (int)Sections.Headers)) != 0)
-    {
-        <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header())) />
-    }
-
-    @* QUERY PARAMS *@
-    <Button Text="Query params >" OnClick="@(() => showMask ^= (1 << (int) Sections.QueryParams))" />
-    @if ((showMask & (1 << (int)Sections.QueryParams)) != 0)
-    {
-        <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
-    }
-
-
-    @* EXPECTED CODE *@
-    <Entry Placeholder="@(((int)newService.ExpectedCode).ToString())"
-           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-           @bind-Text="ResponseCodeString" />
-
-
-
-    @* ERRORS ARE HERE *@
-    <Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" />
-
-
-    @* MAIN CONTROLS *@
-    <StackLayout Orientation=" XF.StackOrientation.Horizontal">
-        <Button Text="Save"
-                IsEnabled="@(!isSaving)"
-                OnClick="@OnSaveServiceButtonClicked" />
-        <Button IsEnabled="@(!isSaving)"
-                OnClick="@DoneCallback">
-            Abort
-        </Button>
-        <ActivityIndicator IsVisible="isSaving" IsRunning="true" />
-    </StackLayout>
-
-
-</StackLayout>
 
 
 @using ServiceHealthChecker;
@@ -70,7 +77,8 @@
     {
         None,
         Headers,
-        QueryParams
+        QueryParams,
+        ResponseMustContain
     }
 
     [Parameter]

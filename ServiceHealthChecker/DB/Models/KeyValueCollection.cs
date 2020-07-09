@@ -3,17 +3,28 @@ using SQLiteNetExtensions.Attributes;
 
 namespace ServiceHealthChecker.DB.Models
 {
-    abstract public class KeyValueCollection
+    //todo think of a better name
+    abstract public class ServiceCollection
     {
-        [PrimaryKey, AutoIncrement] 
+        [PrimaryKey, AutoIncrement]
         public int ID { get; set; }
         [ForeignKey(typeof(Service))]
         public int ServiceId { get; set; }
-        public string Key { get; set; }
-        public string Value { get; set; }
         [ManyToOne]
         public Service Service { get; set; }
     }
+
+    abstract public class KeyValueCollection: ServiceCollection
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class StringCollection:  ServiceCollection
+    {
+        public string Value { get; set; }
+    }
+
     //unrelated todo inspect malformed header parameters
     public class Header : KeyValueCollection
     {
@@ -22,4 +33,6 @@ namespace ServiceHealthChecker.DB.Models
     public class QueryParam : KeyValueCollection
     {
     }
+
+
 }
