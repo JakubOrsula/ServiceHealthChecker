@@ -1,8 +1,11 @@
 ﻿using ServiceHealthChecker.DB.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Web;
 
 namespace ServiceHealthChecker.Helpers
 {
@@ -38,6 +41,23 @@ namespace ServiceHealthChecker.Helpers
         {
             //todo dont construct new class use static props
             return new HttpMethod(method.ToHttpMethodString());
+        }
+
+        public static string GetFullUri(this Service s)
+        {
+            if (s is null)
+            {
+                return "";
+            }
+            if (!s.QueryParams.Any())
+            {
+                return s.URI.ToString();
+            }
+            //todo maybe keep it stored encoded
+            var parameters = s.QueryParams.Select(param => HttpUtility.UrlEncode(param.Key) + "=" + HttpUtility.UrlEncode(param.Value)).ToArray();
+            var queryString = String.Join("&", parameters);
+            return s.URI + "?" + queryString;
+
         }
     }
 }

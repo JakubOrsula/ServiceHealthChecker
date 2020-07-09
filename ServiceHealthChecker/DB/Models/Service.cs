@@ -32,16 +32,20 @@ namespace ServiceHealthChecker.DB.Models
         public HttpMethods Method { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]
-        public List<ServiceHeaders> Headers { get; set; }
+        public List<Header> Headers { get; set; } = new List<Header>();
+
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        public List<QueryParam> QueryParams { get; set; } = new List<QueryParam>();
+
         //todo rename to expected response
         public HttpStatusCode ExpectedCode { get; set; } = HttpStatusCode.OK;
-        public int Timeout { get; set; } = Constants.DefaultTimeout; //timeout in seconds
+        public int Timeout { get; set; } = Constants.DefaultTimeout; //todo refactor to timespan
 
         public Service()
         {
-            Headers = new List<ServiceHeaders>
+            Headers = new List<Header>
             {
-                new ServiceHeaders
+                new Header
                 {
                     Key = "User-Agent",
                     Value = "ServiceHealthChecker"

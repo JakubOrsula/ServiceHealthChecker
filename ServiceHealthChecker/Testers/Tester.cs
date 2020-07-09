@@ -37,8 +37,8 @@ namespace ServiceHealthChecker.Testers
             log.RequestStart = DateTime.Now;
             Task.Run(async () => { await Task.Delay(service.Timeout * 1000); cts.Cancel(); });
 
-
-            var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.URI);
+            
+            var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.GetFullUri());
             foreach(var item in service.Headers)
             {
                 request.Headers.Add(item.Key, item.Value);
