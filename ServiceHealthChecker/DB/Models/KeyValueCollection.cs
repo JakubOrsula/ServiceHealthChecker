@@ -20,9 +20,18 @@ namespace ServiceHealthChecker.DB.Models
         public string Value { get; set; }
     }
 
-    public class StringCollection:  ServiceCollection
+    public abstract class StringCollection:  ServiceCollection
     {
         public string Value { get; set; }
+    }
+
+    //altough unintuitive, every collumn must be of different type, bc sqllite-extensions uses only types to distinguish them
+    public class BodyMustContain : StringCollection
+    {
+    }
+
+    public class BodyMustNotContain : StringCollection
+    {
     }
 
     //unrelated todo inspect malformed header parameters

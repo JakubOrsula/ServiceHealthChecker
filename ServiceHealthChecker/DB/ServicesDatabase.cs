@@ -20,7 +20,8 @@ namespace ServiceHealthChecker.DB
             database.CreateTableAsync<Service>().Wait();
             database.CreateTableAsync<Header>().Wait();
             database.CreateTableAsync<QueryParam>().Wait(); 
-            database.CreateTableAsync<StringCollection>().Wait();
+            database.CreateTableAsync<BodyMustContain>().Wait();
+            database.CreateTableAsync<BodyMustNotContain>().Wait();
         }
 
         public Task<List<Service>> GetServicesAsync()

@@ -32,7 +32,11 @@ namespace ServiceHealthChecker.DB.Models
         public HttpMethods Method { get; set; }
         [OneToMany(CascadeOperations = CascadeOperation.All)]
         //todo rename to body must contain
-        public List<StringCollection> ResponseMustContain { get; set; } = new List<StringCollection>();
+        public List<BodyMustContain> BodyMustContain { get; set; } = new List<BodyMustContain>();
+
+        [OneToMany(CascadeOperations = CascadeOperation.All)]
+        //todo rename to body must not contain
+        public List<BodyMustNotContain> BodyMustNotContain { get; set; } = new List<BodyMustNotContain>();
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<Header> Headers { get; set; } = new List<Header>();

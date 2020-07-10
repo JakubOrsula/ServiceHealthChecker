@@ -89,13 +89,18 @@ namespace ServiceHealthChecker.Testers
             HandleRequestFinish(ref log, ref response);
 
             log.Status = ServiceStatus.AliveAndWell;
-            if (service.ResponseMustContain.Any())
+            if (service.BodyMustContain.Any() || service.BodyMustNotContain.Any())
             {
                 var body = await response.Content.ReadAsStringAsync(); //todo check if this returns what is expected
                 //todo for more speed use regex
-                if (service.ResponseMustContain.Any(s => !body.Contains(s.Value)))
+                if (service.BodyMustContain.Any(s => !body.Contains(s.Value)))
                 {
                     log.Status = ServiceStatus.ValidationError;
+                }
+
+                if (service.BodyMustNotContain.Any(s => body.Contains(s.Value)))
+                {
+                    log.Status = ServiceStatus.ValidationError; //todo distiguish validation errors
                 }
             }
             

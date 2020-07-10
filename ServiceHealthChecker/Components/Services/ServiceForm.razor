@@ -33,11 +33,18 @@
             <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
         }
 
-        @* RESPONSE MUST CONTAIN *@
-        <Button Text="Response must conatin >" OnClick="@(() => showMask ^= (1 << (int) Sections.ResponseMustContain))" />
+        @* BODY MUST CONTAIN *@
+        <Button Text="Body must conatin >" OnClick="@(() => showMask ^= (1 << (int) Sections.ResponseMustContain))" />
         @if ((showMask & (1 << (int)Sections.ResponseMustContain)) != 0)
         {
-            <StringCollectionView Entries=@(newService.ResponseMustContain) AddEntryCallback=@(() => newService.ResponseMustContain.Add(new StringCollection())) />
+            <StringCollectionView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain())) />
+        }
+
+        @* BODY MUST NOT CONTAIN *@
+        <Button Text="Body must not conatin >" OnClick="@(() => showMask ^= (1 << (int) Sections.BodyMustNotContain))" />
+        @if ((showMask & (1 << (int)Sections.BodyMustNotContain)) != 0)
+        {
+            <StringCollectionView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain())) />
         }
 
 
@@ -78,7 +85,8 @@
         None,
         Headers,
         QueryParams,
-        ResponseMustContain
+        ResponseMustContain, //todo rename
+        BodyMustNotContain
     }
 
     [Parameter]
