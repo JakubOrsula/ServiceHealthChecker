@@ -7,64 +7,64 @@
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="newService.Name"/>
 
-    <Entry Placeholder="@(newService.URI.ToString())"
+    <Entry Placeholder="Enter url here"
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="URIstring"/>
 
     @* METHOD *@
     <StackLayout Orientation="XF.StackOrientation.Horizontal">
-        <Button Text="GET" OnClick="@() => newService.Method = HttpMethods.Get" IsEnabled="@newService.Method != HttpMethods.Get"/>
-        <Button Text="POST" OnClick="@() => newService.Method = HttpMethods.Post" IsEnabled="@newService.Method != HttpMethods.Post"/>
-        <Button Text="PUT" OnClick="@() => newService.Method = HttpMethods.Put" IsEnabled="@newService.Method != HttpMethods.Put"/>
-        <Button Text="DELETE" OnClick="@() => newService.Method = HttpMethods.Delete" IsEnabled="@newService.Method != HttpMethods.Delete"/>
+        <Button Text="GET" OnClick="@(() => newService.Method = HttpMethods.Get)" IsEnabled="@(newService.Method != HttpMethods.Get)"/>
+        <Button Text="POST" OnClick="@(() => newService.Method = HttpMethods.Post)" IsEnabled="@(newService.Method != HttpMethods.Post)"/>
+        <Button Text="PUT" OnClick="@(() => newService.Method = HttpMethods.Put)" IsEnabled="@(newService.Method != HttpMethods.Put)"/>
+        <Button Text="DELETE" OnClick="@(() => newService.Method = HttpMethods.Delete)" IsEnabled="@(newService.Method != HttpMethods.Delete)"/>
     </StackLayout>
 
 
     @* HEADERS *@
-    <Button Text="Headers >" OnClick="@() => showMask ^= 1 << (int) Sections.Headers"/>
+    <Button Text="Headers >" OnClick="@(() => showMask ^= 1 << (int) Sections.Headers)"/>
     @if ((showMask & (1 << (int) Sections.Headers)) != 0)
     {
         <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header()))/>
     }
 
     @* QUERY PARAMS *@
-    <Button Text="Query params >" OnClick="@() => showMask ^= 1 << (int) Sections.QueryParams"/>
+    <Button Text="Query params >" OnClick="@(() => showMask ^= 1 << (int) Sections.QueryParams)"/>
     @if ((showMask & (1 << (int) Sections.QueryParams)) != 0)
     {
         <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam()))/>
     }
 
     @* BODY MUST CONTAIN *@
-    <Button Text="Body must conatin >" OnClick="@() => showMask ^= 1 << (int) Sections.BodyMustContain"/>
+    <Button Text="Body must conatin >" OnClick="@(() => showMask ^= 1 << (int) Sections.BodyMustContain)"/>
     @if ((showMask & (1 << (int) Sections.BodyMustContain)) != 0)
     {
-        <StringColumnView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain()))/>
+        <StringCollectionView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain()))/>
     }
 
     @* BODY MUST NOT CONTAIN *@
-    <Button Text="Body must not conatin >" OnClick="@() => showMask ^= 1 << (int) Sections.BodyMustNotContain"/>
+    <Button Text="Body must not conatin >" OnClick="@(() => showMask ^= 1 << (int) Sections.BodyMustNotContain)"/>
     @if ((showMask & (1 << (int) Sections.BodyMustNotContain)) != 0)
     {
-        <StringColumnView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain()))/>
+        <StringCollectionView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain()))/>
     }
 
 
     @* EXPECTED CODE *@
-    <Entry Placeholder="@(((int) newService.ExpectedResponseCode).ToString())"
+    <Entry Placeholder="Expected response code"
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="ResponseCodeString"/>
 
 
     @* ERRORS ARE HERE *@
-    <Label IsVisible="@ErrorsInString.Length != 0" Text="@ErrorsInString" TextColor="XF.Color.Red"/>
+    <Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red"/>
 
 
     @* MAIN CONTROLS *@
     <StackLayout Orientation="XF.StackOrientation.Horizontal">
         <Button Text="Save"
-                IsEnabled="@!isSaving"
+                IsEnabled="@(!isSaving)"
                 OnClick="@OnSaveServiceButtonClicked"/>
-        <Button IsEnabled="@!isSaving"
+        <Button IsEnabled="@(!isSaving)"
                 OnClick="@DoneCallback">
             Abort
         </Button>
@@ -93,13 +93,19 @@
 
     private string URIstring = "";
 
-    private readonly string ResponseCodeString = "";
+    private string ResponseCodeString = "";
 
     private string ErrorsInString = "";
 
     private bool isSaving;
 
     private int showMask = (int) Sections.None;
+
+    protected override void OnInitialized() //todo go back to async and stahaschanged
+    {
+        URIstring = newService.URI.ToString();
+        ResponseCodeString = ((int)newService.ExpectedResponseCode).ToString();
+    }
 
 
     private async void OnSaveServiceButtonClicked()
@@ -112,7 +118,7 @@
         {
             newService.QueryParams.AddRange(Convertors.QueryParamsExtractor(URIstring));
             apiUrl = new Uri(apiUrl.GetLeftPart(UriPartial.Path));
-            
+
             if (apiUrl.Scheme == Uri.UriSchemeHttps)
             {
                 newService.URI = apiUrl;
@@ -126,7 +132,7 @@
         {
             ErrorsInString += "Couldn't parse your url\n";
         }
-        
+
         if (ResponseCodeString.Length > 0)
         {
             if (int.TryParse(ResponseCodeString, out var responseCode) && Enum.IsDefined(typeof(HttpStatusCode), responseCode))
@@ -138,7 +144,7 @@
                 ErrorsInString += "Response code invalid\n";
             }
         }
-        
+
         // I can't think of smarter way of doing this rn
         newService.Headers.RemoveAll(h => string.IsNullOrWhiteSpace(h.Value));
         newService.QueryParams.RemoveAll(h => string.IsNullOrWhiteSpace(h.Value));
@@ -148,7 +154,7 @@
         if (ErrorsInString.Length == 0)
         {
             await App.ServicesDb.SaveServiceAsync(newService);
-            
+
             isSaving = false;
             DoneCallback.InvokeAsync(this);
         }
@@ -156,7 +162,7 @@
         {
             isSaving = false;
             StateHasChanged();
-        } //todo bind texts and decompose
+        } //todo decompose
     }
 
 }
