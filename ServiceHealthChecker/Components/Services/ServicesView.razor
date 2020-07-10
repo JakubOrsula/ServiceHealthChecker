@@ -23,7 +23,7 @@ else
                 break;
             case ServiceViews.CreateNew:
                 <ServiceForm newService="@(new DB.Models.Service {
-                                 Method = HttpMethods.GET,
+                                 Method = HttpMethods.Get,
                                  Name = "new service",
                                  URI = new Uri("https://example.com/")
                              })"
@@ -52,7 +52,7 @@ else
     {
         //little hack to make sure to break free from render loop
         await Task.Delay(1);
-        App.ServicesDb.ServiceDeleted += (_, __) => RefreshDisplayedServices();
+        App.ServicesDb.ServiceDeletedEventHandler += (_, __) => RefreshDisplayedServices();
         await RefreshDisplayedServices();
 
     }

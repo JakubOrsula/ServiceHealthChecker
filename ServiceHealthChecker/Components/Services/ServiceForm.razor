@@ -1,83 +1,79 @@
 ﻿@using ServiceHealthChecker.DB.Models
+@using ServiceHealthChecker.Helpers
 @using ServiceHealthChecker.Components.Misc
+@using System.Net
+<StackLayout HorizontalOptions="XF.LayoutOptions.StartAndExpand">
+    <Entry Placeholder="Name"
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+           @bind-Text="newService.Name"/>
 
-    <StackLayout HorizontalOptions="XF.LayoutOptions.StartAndExpand">
-        <Entry Placeholder="Name"
-               ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-               @bind-Text="newService.Name" />
+    <Entry Placeholder="@(newService.URI.ToString())"
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+           @bind-Text="URIstring"/>
 
-        <Entry Placeholder="@(newService.URI.ToString())"
-               ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-               @bind-Text="URIstring" />
-
-        @* METHOD *@
-        <StackLayout Orientation="XF.StackOrientation.Horizontal">
-            <Button Text="GET" OnClick="@(() => newService.Method = DB.Models.HttpMethods.GET)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.GET)" />
-            <Button Text="POST" OnClick="@(() => newService.Method = DB.Models.HttpMethods.POST)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.POST)" />
-            <Button Text="PUT" OnClick="@(() => newService.Method = DB.Models.HttpMethods.PUT)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.PUT)" />
-            <Button Text="DELETE" OnClick="@(() => newService.Method = DB.Models.HttpMethods.DELETE)" IsEnabled="@(newService.Method != DB.Models.HttpMethods.DELETE)" />
-        </StackLayout>
-
-
-        @* HEADERS *@
-        <Button Text="Headers >" OnClick="@(() => showMask ^= (1 << (int) Sections.Headers))" />
-        @if ((showMask & (1 << (int)Sections.Headers)) != 0)
-        {
-            <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header())) />
-        }
-
-        @* QUERY PARAMS *@
-        <Button Text="Query params >" OnClick="@(() => showMask ^= (1 << (int) Sections.QueryParams))" />
-        @if ((showMask & (1 << (int)Sections.QueryParams)) != 0)
-        {
-            <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
-        }
-
-        @* BODY MUST CONTAIN *@
-        <Button Text="Body must conatin >" OnClick="@(() => showMask ^= (1 << (int) Sections.ResponseMustContain))" />
-        @if ((showMask & (1 << (int)Sections.ResponseMustContain)) != 0)
-        {
-            <StringCollectionView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain())) />
-        }
-
-        @* BODY MUST NOT CONTAIN *@
-        <Button Text="Body must not conatin >" OnClick="@(() => showMask ^= (1 << (int) Sections.BodyMustNotContain))" />
-        @if ((showMask & (1 << (int)Sections.BodyMustNotContain)) != 0)
-        {
-            <StringCollectionView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain())) />
-        }
-
-
-        @* EXPECTED CODE *@
-        <Entry Placeholder="@(((int)newService.ExpectedCode).ToString())"
-               ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-               @bind-Text="ResponseCodeString" />
-
-
-
-        @* ERRORS ARE HERE *@
-        <Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" />
-
-
-        @* MAIN CONTROLS *@
-        <StackLayout Orientation=" XF.StackOrientation.Horizontal">
-            <Button Text="Save"
-                    IsEnabled="@(!isSaving)"
-                    OnClick="@OnSaveServiceButtonClicked" />
-            <Button IsEnabled="@(!isSaving)"
-                    OnClick="@DoneCallback">
-                Abort
-            </Button>
-            <ActivityIndicator IsVisible="isSaving" IsRunning="true" />
-        </StackLayout>
-
-
+    @* METHOD *@
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        <Button Text="GET" OnClick="@() => newService.Method = HttpMethods.Get" IsEnabled="@newService.Method != HttpMethods.Get"/>
+        <Button Text="POST" OnClick="@() => newService.Method = HttpMethods.Post" IsEnabled="@newService.Method != HttpMethods.Post"/>
+        <Button Text="PUT" OnClick="@() => newService.Method = HttpMethods.Put" IsEnabled="@newService.Method != HttpMethods.Put"/>
+        <Button Text="DELETE" OnClick="@() => newService.Method = HttpMethods.Delete" IsEnabled="@newService.Method != HttpMethods.Delete"/>
     </StackLayout>
 
 
-@using ServiceHealthChecker;
-@using System.Net;
-@using System.Web;
+    @* HEADERS *@
+    <Button Text="Headers >" OnClick="@() => showMask ^= 1 << (int) Sections.Headers"/>
+    @if ((showMask & (1 << (int) Sections.Headers)) != 0)
+    {
+        <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header()))/>
+    }
+
+    @* QUERY PARAMS *@
+    <Button Text="Query params >" OnClick="@() => showMask ^= 1 << (int) Sections.QueryParams"/>
+    @if ((showMask & (1 << (int) Sections.QueryParams)) != 0)
+    {
+        <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam()))/>
+    }
+
+    @* BODY MUST CONTAIN *@
+    <Button Text="Body must conatin >" OnClick="@() => showMask ^= 1 << (int) Sections.BodyMustContain"/>
+    @if ((showMask & (1 << (int) Sections.BodyMustContain)) != 0)
+    {
+        <StringColumnView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain()))/>
+    }
+
+    @* BODY MUST NOT CONTAIN *@
+    <Button Text="Body must not conatin >" OnClick="@() => showMask ^= 1 << (int) Sections.BodyMustNotContain"/>
+    @if ((showMask & (1 << (int) Sections.BodyMustNotContain)) != 0)
+    {
+        <StringColumnView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain()))/>
+    }
+
+
+    @* EXPECTED CODE *@
+    <Entry Placeholder="@(((int) newService.ExpectedResponseCode).ToString())"
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
+           @bind-Text="ResponseCodeString"/>
+
+
+    @* ERRORS ARE HERE *@
+    <Label IsVisible="@ErrorsInString.Length != 0" Text="@ErrorsInString" TextColor="XF.Color.Red"/>
+
+
+    @* MAIN CONTROLS *@
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        <Button Text="Save"
+                IsEnabled="@!isSaving"
+                OnClick="@OnSaveServiceButtonClicked"/>
+        <Button IsEnabled="@!isSaving"
+                OnClick="@DoneCallback">
+            Abort
+        </Button>
+        <ActivityIndicator IsVisible="isSaving" IsRunning="true"/>
+    </StackLayout>
+
+
+</StackLayout>
+
 @code {
 
     private enum Sections
@@ -85,97 +81,82 @@
         None,
         Headers,
         QueryParams,
-        ResponseMustContain, //todo rename
+        BodyMustContain,
         BodyMustNotContain
     }
 
     [Parameter]
-    public DB.Models.Service newService { get; set; }
+    public Service newService { get; set; }
 
     [Parameter]
     public EventCallback DoneCallback { get; set; }
 
     private string URIstring = "";
 
-    private string ResponseCodeString = "";
+    private readonly string ResponseCodeString = "";
 
     private string ErrorsInString = "";
 
     private bool isSaving;
 
-    private int showMask = (int)Sections.None;
+    private int showMask = (int) Sections.None;
 
-    //todo research possible speedups by using async programming
+
     private async void OnSaveServiceButtonClicked()
     {
         isSaving = true;
         ErrorsInString = "";
-        var querySeparatorIndex = URIstring.IndexOf('?');
-        if (querySeparatorIndex != -1 && URIstring.Length != querySeparatorIndex+1)
-        {
-            var parameters = HttpUtility.ParseQueryString(URIstring.Substring(querySeparatorIndex+1));
-            var flattened_params = parameters.AllKeys.SelectMany(parameters.GetValues, (k, v) => new { key = k, value = v });
-            if (parameters.HasKeys())
-            {
-                //todo move to helper
-                foreach(var par in flattened_params)
-                {
-                    //todo rename KEyValueCollection to KeyValueObject
-                    newService.QueryParams.Add(new QueryParam { Key = par.key, Value = par.value });
-                }
-                URIstring = URIstring.Substring(0, querySeparatorIndex);
-            }
-            if (Uri.TryCreate(URIstring, UriKind.Absolute, out var apiUrl))
-            {
-                if (apiUrl.Scheme == Uri.UriSchemeHttps)
-                {
 
-                    newService.URI = apiUrl;
-                }
-                else
-                {
-                    ErrorsInString += "Cleartext traffic is not allowed\n";
-                }
+
+        if (Uri.TryCreate(URIstring, UriKind.Absolute, out var apiUrl))
+        {
+            newService.QueryParams.AddRange(Convertors.QueryParamsExtractor(URIstring));
+            apiUrl = new Uri(apiUrl.GetLeftPart(UriPartial.Path));
+            
+            if (apiUrl.Scheme == Uri.UriSchemeHttps)
+            {
+                newService.URI = apiUrl;
             }
             else
             {
-                ErrorsInString += "Couldn't parse your url\n";
-
+                ErrorsInString += "Cleartext traffic is not allowed\n";
             }
         }
-
+        else
+        {
+            ErrorsInString += "Couldn't parse your url\n";
+        }
+        
         if (ResponseCodeString.Length > 0)
         {
             if (int.TryParse(ResponseCodeString, out var responseCode) && Enum.IsDefined(typeof(HttpStatusCode), responseCode))
             {
-                newService.ExpectedCode = (HttpStatusCode)responseCode;
+                newService.ExpectedResponseCode = (HttpStatusCode) responseCode;
             }
             else
             {
                 ErrorsInString += "Response code invalid\n";
             }
         }
-
-        //todo move to saving?
-        newService.Headers.RemoveAll(h => String.IsNullOrWhiteSpace(h.Value));
-        newService.QueryParams.RemoveAll(h => String.IsNullOrWhiteSpace(h.Value));
+        
+        // I can't think of smarter way of doing this rn
+        newService.Headers.RemoveAll(h => string.IsNullOrWhiteSpace(h.Value));
+        newService.QueryParams.RemoveAll(h => string.IsNullOrWhiteSpace(h.Value));
+        newService.BodyMustContain.RemoveAll(h => string.IsNullOrWhiteSpace(h.Value));
+        newService.BodyMustNotContain.RemoveAll(h => string.IsNullOrWhiteSpace(h.Value));
 
         if (ErrorsInString.Length == 0)
         {
-            //todo whats the point of async db if im syncing all calls
             await App.ServicesDb.SaveServiceAsync(newService);
-
-            //newService = new DB.Models.Service();
+            
             isSaving = false;
-            StateHasChanged(); //todo depending on expected behaviour purge this or donecallback
             DoneCallback.InvokeAsync(this);
         }
         else
         {
             isSaving = false;
             StateHasChanged();
-        }
-
-
+        } //todo bind texts and decompose
     }
+
 }

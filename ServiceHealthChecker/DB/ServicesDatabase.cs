@@ -7,12 +7,12 @@ using SQLiteNetExtensionsAsync.Extensions;
 
 namespace ServiceHealthChecker.DB
 {
-    //todo rename to represent everything
     public class ServicesDatabase
     {
-        readonly SQLiteAsyncConnection database;
+        private readonly SQLiteAsyncConnection database;
 
-        public event EventHandler ServiceDeleted; //todo add handler suffix and consider not using it
+        // I used callbacks to rerender parent components, but in this case I wanted to try doing this via event
+        public event EventHandler ServiceDeletedEventHandler;
 
         public ServicesDatabase()
         {
@@ -42,7 +42,7 @@ namespace ServiceHealthChecker.DB
         public Task<int> DeleteServiceAsync(Service service)
         {
             return database.DeleteAsync(service).ContinueWith(task => {
-                ServiceDeleted?.Invoke(null, EventArgs.Empty);
+                ServiceDeletedEventHandler?.Invoke(null, EventArgs.Empty);
                 return task.Result;
             });
         }

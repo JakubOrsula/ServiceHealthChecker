@@ -3,7 +3,7 @@
     <Frame>
         <StackLayout>
             <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Label Text=@service.Name />
+                <Label Text=@Service.Name />
                 @if (info == null)
                 {
                     <ActivityIndicator IsRunning="true" />
@@ -14,8 +14,8 @@
                 }
             </StackLayout>
             <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(service)) IsEnabled=@(!isProbing) />
-                <Button Text="Probe" OnClick=@probeService IsEnabled=@(!isProbing) />
+                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) />
+                <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) />
                 <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
             </StackLayout>
         </StackLayout>
@@ -23,9 +23,8 @@
 
 @code
 {
-    //todo rename
     [Parameter]
-    public Service service { get; set; }
+    public Service Service { get; set; }
 
     [Parameter]
     public EventCallback<Service> ServiceSelected { get; set; }
@@ -34,12 +33,10 @@
 
     private bool isProbing;
 
-    private async void probeService()
+    private async void ProbeService()
     {
         isProbing = true;
-
-        //todo do some renaming for the love of god
-        var result = await Testers.Tester.TestService(service);
+        var result = await Testers.Tester.TestService(Service);
         await App.LogsDb.SaveProbingLogAsync(result);
         isProbing = false;
         RefreshInfo();
@@ -55,7 +52,7 @@
 
     private async Task RefreshInfo()
     {
-        info = (await App.LogsDb.GetProbingLogsAsync(service.ID)).FirstOrDefault() ?? new ProbingLog();
+        info = (await App.LogsDb.GetProbingLogsAsync(Service.ID)).FirstOrDefault() ?? new ProbingLog();
         StateHasChanged();
     }
 }

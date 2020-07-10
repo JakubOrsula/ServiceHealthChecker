@@ -7,9 +7,9 @@ else
     <Label Text=@service.Name />
     <Label Text=@($"Method: {service.Method}") />
     <Label Text=@($"URI: {service.URI}") />
-    <Label Text=@($"Timeout: {service.Timeout}s") />
+    <Label Text=@($"Timeout: {service.Timeout.TotalSeconds:00}s") />
     <Label Text="Validation:" />
-    <Label Text=@($"Expected response: {service.ExpectedCode}") />
+    <Label Text=@($"Expected response: {service.ExpectedResponseCode}") />
     <Button OnClick="@(() => serviceToEdit = service)" Text="Edit" />
     <Button OnClick="@DeleteService" Text="Delete" />
     <Button OnClick="@GoBack" Text="Go back" />

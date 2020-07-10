@@ -1,56 +1,58 @@
-﻿using ServiceHealthChecker.DB.Models;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System;
+﻿using System;
 using System.Linq;
-using System.Net.Http.Headers;
-using Xamarin.Forms.Internals;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
+using ServiceHealthChecker.DB.Models;
 using ServiceHealthChecker.Helpers;
 
 namespace ServiceHealthChecker.Testers
 {
     public static class Tester
     {
-        private static HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new HttpClient();
 
         private static void HandleRequestFinish(ref ProbingLog log, ref HttpResponseMessage response)
         {
             log.RequestFinish = DateTime.Now;
             log.ReceivedResponseCode = response.StatusCode;
         }
-        
+
 
         public static async Task<ProbingLog> TestService(Service service)
         {
-            CancellationTokenSource cts = new CancellationTokenSource();
+            var cts = new CancellationTokenSource();
             var log = new ProbingLog
             {
                 ServiceID = service.ID,
                 ServiceName = service.Name,
                 UsedUri = service.URI,
                 UsedMethod = service.Method,
-                ExpectedResponseCode = service.ExpectedCode,
+                ExpectedResponseCode = service.ExpectedResponseCode,
                 UsedTimeout = service.Timeout,
                 Status = ServiceStatus.Untested
             };
             HttpResponseMessage response = null;
             log.RequestStart = DateTime.Now;
-            Task.Run(async () => { await Task.Delay(service.Timeout * 1000); cts.Cancel(); });
 
-            
-            var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.GetFullUri());
-            foreach(var item in service.Headers)
+            //this is not ideal, but setting timeout in HttpClient causes uncatchable native exception 
+            Task.Run(async () =>
             {
+                await Task.Delay(service.Timeout);
+                cts.Cancel();
+            });
+
+
+            var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.GetFullUri());
+            foreach (var item in service.Headers)
                 try
                 {
                     request.Headers.Add(item.Key, item.Value);
                 }
                 catch (Exception e)
                 {
-                    //todo i dunno
+                    //don't send invalid headers (parser is for some reason private so we can't check validity at entering
                 }
-            }
 
             try
             {
@@ -67,7 +69,7 @@ namespace ServiceHealthChecker.Testers
                 log.Status = ServiceStatus.Timeout;
                 return log;
             }
-            catch(Exception e) //theres a bug in mono wich causes timout to be thrown as antive exception and I cannot catch it otherwise
+            catch (Exception e)
             {
                 log.Status = ServiceStatus.Timeout;
                 return log;
@@ -79,10 +81,10 @@ namespace ServiceHealthChecker.Testers
                 return log;
             }
 
-            if (response.StatusCode != service.ExpectedCode)
+            if (response.StatusCode != service.ExpectedResponseCode)
             {
                 HandleRequestFinish(ref log, ref response);
-                log.Status = ServiceStatus.ValidationError;
+                log.Status = ServiceStatus.ResponseCodeMismatch;
                 return log;
             }
 
@@ -91,21 +93,16 @@ namespace ServiceHealthChecker.Testers
             log.Status = ServiceStatus.AliveAndWell;
             if (service.BodyMustContain.Any() || service.BodyMustNotContain.Any())
             {
-                var body = await response.Content.ReadAsStringAsync(); //todo check if this returns what is expected
-                //todo for more speed use regex
+                var body = await response.Content.ReadAsStringAsync();
+                // idea: use regex
                 if (service.BodyMustContain.Any(s => !body.Contains(s.Value)))
-                {
-                    log.Status = ServiceStatus.ValidationError;
-                }
+                    log.Status = ServiceStatus.BodyValidationFail;
 
                 if (service.BodyMustNotContain.Any(s => body.Contains(s.Value)))
-                {
-                    log.Status = ServiceStatus.ValidationError; //todo distiguish validation errors
-                }
+                    log.Status = ServiceStatus.BodyValidationFail;
             }
-            
 
-            
+
             return log;
         }
     }

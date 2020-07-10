@@ -18,11 +18,11 @@ namespace ServiceHealthChecker
     }
     public static class Constants
     {
-        public const int DefaultTimeout = 15;
-        
-        public const string ServicesDatabaseFilename = "ServicesDB.db3";
-        public const string LogsDatabaseFilename = "LogsDB.db3";
-        public const string ServiceHeadersDatabaseFilename = "ServiceHeadersDB.db3";
+        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(15);
+
+        private const string ServicesDatabaseFilename = "ServicesDB.db3";
+        private const string LogsDatabaseFilename = "LogsDB.db3";
+        private const string ServiceHeadersDatabaseFilename = "ServiceHeadersDB.db3";
 
         public const SQLite.SQLiteOpenFlags Flags =
             // open the database in read/write mode

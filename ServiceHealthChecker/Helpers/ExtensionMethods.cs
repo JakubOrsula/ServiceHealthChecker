@@ -30,17 +30,34 @@ namespace ServiceHealthChecker.Helpers
         {
             switch(method)
             {
-                case HttpMethods.GET:
+                case HttpMethods.Get:
                     return "GET";
-                default:
+                case HttpMethods.Put:
+                    return "PUT";
+                case HttpMethods.Post:
+                    return "POST";
+                case HttpMethods.Delete:
+                    return "DELETE";
+                default: //will never happen
                     return "UNKNOWN";
             }
         }
 
         public static HttpMethod ToHttpMethodObj(this HttpMethods method)
         {
-            //todo dont construct new class use static props
-            return new HttpMethod(method.ToHttpMethodString());
+            switch(method)
+            {
+                case HttpMethods.Get:
+                    return HttpMethod.Get;
+                case HttpMethods.Put:
+                    return HttpMethod.Put;
+                case HttpMethods.Post:
+                    return HttpMethod.Post;
+                case HttpMethods.Delete:
+                    return HttpMethod.Delete;
+                default: //will never happen
+                    return new HttpMethod("UNKNOWN");
+            }
         }
 
         public static string GetFullUri(this Service s)
@@ -53,7 +70,6 @@ namespace ServiceHealthChecker.Helpers
             {
                 return s.URI.ToString();
             }
-            //todo maybe keep it stored encoded
             var parameters = s.QueryParams.Select(param => HttpUtility.UrlEncode(param.Key) + "=" + HttpUtility.UrlEncode(param.Value)).ToArray();
             var queryString = String.Join("&", parameters);
             return s.URI + "?" + queryString;
