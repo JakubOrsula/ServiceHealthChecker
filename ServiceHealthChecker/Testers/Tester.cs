@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System;
+using System.Linq;
 using System.Net.Http.Headers;
 using Xamarin.Forms.Internals;
 using System.Threading;
@@ -41,7 +42,14 @@ namespace ServiceHealthChecker.Testers
             var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.GetFullUri());
             foreach(var item in service.Headers)
             {
-                request.Headers.Add(item.Key, item.Value);
+                try
+                {
+                    request.Headers.Add(item.Key, item.Value);
+                }
+                catch (Exception e)
+                {
+                    //todo i dunno
+                }
             }
 
             try
@@ -65,7 +73,7 @@ namespace ServiceHealthChecker.Testers
                 return log;
             }
 
-            if (response == null) //should never happen and will throw nullexcpetion
+            if (response == null)
             {
                 log.Status = ServiceStatus.NetworkError;
                 return log;
@@ -80,8 +88,19 @@ namespace ServiceHealthChecker.Testers
 
             HandleRequestFinish(ref log, ref response);
 
-
             log.Status = ServiceStatus.AliveAndWell;
+            if (service.ResponseMustContain.Any())
+            {
+                var body = await response.Content.ReadAsStringAsync(); //todo check if this returns what is expected
+                //todo for more speed use regex
+                if (service.ResponseMustContain.Any(s => !body.Contains(s.Value)))
+                {
+                    log.Status = ServiceStatus.ValidationError;
+                }
+            }
+            
+
+            
             return log;
         }
     }
