@@ -1,0 +1,22 @@
+﻿@* METHOD *@
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        @foreach (var method in Methods)
+        {
+            <Button Text="@(method.ToHttpMethodString())" OnClick="@(() => SetMethod.InvokeAsync(method))" IsEnabled="@(SelectedMethod != method)" HorizontalOptions="XF.LayoutOptions.FillAndExpand" />
+        }
+    </StackLayout>
+
+@using ServiceHealthChecker.DB.Models;
+@code {
+
+    [Parameter]
+    public HttpMethods SelectedMethod { get; set; }
+
+    [Parameter]
+    public IEnumerable<HttpMethods> Methods { get; set; }
+
+    [Parameter]
+    public EventCallback<HttpMethods> SetMethod { get; set; }
+
+
+}

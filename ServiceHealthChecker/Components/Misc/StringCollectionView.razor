@@ -1,14 +1,8 @@
 ﻿@foreach (var entry in Entries)
 {
-    <StackLayout Orientation="XF.StackOrientation.Horizontal">
-        <Entry Placeholder="Expression"
-               @bind-Text="@entry.Value" />
-    </StackLayout>
+    <Entry Placeholder="Expression" @bind-Text="@entry.Value" HorizontalOptions="XF.LayoutOptions.CenterAndExpand"/>
 }
-@* todo merge following with dict *@
-<StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Button Text="New expression" OnClick="@AddEntryCallback" />
-</StackLayout>
+<Button Text="New expression" OnClick="@AddEntryCallback" HorizontalOptions="XF.LayoutOptions.Center" />
 
 @using ServiceHealthChecker.DB.Models;
 @code {

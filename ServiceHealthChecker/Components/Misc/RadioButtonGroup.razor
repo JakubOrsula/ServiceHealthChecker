@@ -1,0 +1,15 @@
+﻿@* METHOD *@
+<StackLayout Orientation="XF.StackOrientation.Horizontal">
+    @foreach (var method in Items)
+    {
+        <Button Text="@(method.ToHttpMethodString())" OnClick="@(() => SelectItem.InvokeAsync(method))" IsEnabled="@(SelectedItem!= method)" HorizontalOptions="XF.LayoutOptions.FillAndExpand" />
+    }
+</StackLayout>
+
+@using ServiceHealthChecker.DB.Models;
+@code {
+
+    
+
+
+}

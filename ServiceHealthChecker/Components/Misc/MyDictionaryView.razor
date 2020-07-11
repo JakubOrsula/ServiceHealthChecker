@@ -1,15 +1,12 @@
 ﻿@foreach (var entry in Entries)
 {
     <StackLayout Orientation="XF.StackOrientation.Horizontal">
-        <Entry Placeholder="Key"
-               @bind-Text="@entry.Key" />
-        <Entry Placeholder="Value"
-               @bind-Text="@entry.Value" />
+        <Entry Placeholder="Key" @bind-Text="@entry.Key" HorizontalOptions="XF.LayoutOptions.StartAndExpand"/>
+        <Entry Placeholder="Value" @bind-Text="@entry.Value" HorizontalOptions="XF.LayoutOptions.StartAndExpand"/>
     </StackLayout>
 }
-<StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Button Text="New pair" OnClick="@AddEntryCallback" />
-</StackLayout>
+<Button Text="New pair" OnClick="@AddEntryCallback" HorizontalOptions="XF.LayoutOptions.Center"/>
+
 
 @using ServiceHealthChecker.DB.Models;
 @code {
