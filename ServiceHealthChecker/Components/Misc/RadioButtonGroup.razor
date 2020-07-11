@@ -1,15 +1,32 @@
 ﻿@* METHOD *@
-<StackLayout Orientation="XF.StackOrientation.Horizontal">
-    @foreach (var method in Items)
-    {
-        <Button Text="@(method.ToHttpMethodString())" OnClick="@(() => SelectItem.InvokeAsync(method))" IsEnabled="@(SelectedItem!= method)" HorizontalOptions="XF.LayoutOptions.FillAndExpand" />
-    }
-</StackLayout>
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        @foreach(var item in Items)
+        {
+            <Button Text="@(item.v)" OnClick="@(() => SetItem.InvokeAsync(item.i))" IsEnabled="@(SelectedItem != item.i)" HorizontalOptions="XF.LayoutOptions.FillAndExpand" />
+        }
+    </StackLayout>
 
-@using ServiceHealthChecker.DB.Models;
 @code {
 
-    
+    /// <summary>
+    /// This is simple Enum -> RadioButtonGroup component. For speed and simplicity reasons  0 based enum without [Flags] is assumed.
+    /// </summary>
+    /// 
+
+    public class RBItem
+    {
+        public int i { get; set; }
+        public string v { get; set; }
+    }
+
+    [Parameter]
+    public int SelectedItem { get; set; }
+
+    [Parameter]
+    public IEnumerable<(int i, string v)> Items { get; set; }
+
+    [Parameter]
+    public EventCallback<int> SetItem { get; set; }
 
 
 }

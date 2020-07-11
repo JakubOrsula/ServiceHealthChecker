@@ -11,54 +11,52 @@
        ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
        @bind-Text="URIstring" />
 
-<ServiceFormChooseMethod Methods="@(new List<HttpMethods>{ HttpMethods.Get, HttpMethods.Post, HttpMethods.Put, HttpMethods.Delete})"
-                         SelectedMethod="@newService.Method"
-                         SetMethod="@((m) => newService.Method = m)" />
+@* METHOD *@
+<RadioButtonGroup Items="@(Enum.GetValues(typeof(HttpMethods)).Cast<HttpMethods>().Select((e, i) => (i, e.ToHttpMethodString())))"
+                  SelectedItem="@((int)newService.Method)"
+                  SetItem="((m) => newService.Method = (HttpMethods)m)" />
+@* todo use names idiot and add typeparam *@
 
-@* HEADERS *@
-<Button Text="Headers >" OnClick="@(() => showMask ^= 1 << (int) Sections.Headers)" />
-@if ((showMask & (1 << (int)Sections.Headers)) != 0)
-{
-    <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header())) />
-}
 
-@* QUERY PARAMS *@
-<Button Text="Query params >" OnClick="@(() => showMask ^= 1 << (int) Sections.QueryParams)" />
-@if ((showMask & (1 << (int)Sections.QueryParams)) != 0)
-{
-    <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
-}
+<RadioButtonGroup Items="@(new List<(int i, string v)> { ((int)Sections.Headers, "Headers"), ((int)Sections.QueryParams, "Query parameters")})"
+                  SelectedItem="@((int)newService.Method)"
+                  SetItem="((m) => selectedSection = (Sections)m)" />
 
-@* BODY MUST CONTAIN *@
-<Button Text="Body must conatin >" OnClick="@(() => showMask ^= 1 << (int) Sections.BodyMustContain)" />
-@if ((showMask & (1 << (int)Sections.BodyMustContain)) != 0)
-{
-    <StringCollectionView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain())) />
-}
 
-@* BODY MUST NOT CONTAIN *@
-<Button Text="Body must not conatin >" OnClick="@(() => showMask ^= 1 << (int) Sections.BodyMustNotContain)" />
-@if ((showMask & (1 << (int)Sections.BodyMustNotContain)) != 0)
+@switch (selectedSection)
 {
-    <StringCollectionView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain())) />
+    case Sections.Headers:
+        <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header())) />
+        break;
+    case Sections.QueryParams:
+        <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
+        break;
+    case Sections.BodyMustContain:
+        <StringCollectionView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain())) />
+        break;
+    case Sections.BodyMustNotContain:
+        <StringCollectionView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain())) />
+        break;
+
 }
 
 
 @* EXPECTED CODE *@
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Label Text="Response code:" />
+    <Label Text="Response code:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
     <Entry Placeholder="Expected response code"
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-           @bind-Text="ResponseCodeString" />
+           @bind-Text="ResponseCodeString"
+           VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
 </StackLayout>
 
 
 @* TIMEOUT *@
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Label Text="Timeout:" />
+    <Label Text="Timeout:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
     <Entry ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-           @bind-Text="timeoutString" />
-    <Label Text="s" />
+           @bind-Text="timeoutString" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
+    <Label Text="s" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
 </StackLayout>
 
 
@@ -106,6 +104,8 @@
     private bool isSaving;
 
     private int showMask = (int)Sections.None;
+
+    private Sections selectedSection = Sections.None;
 
     protected override void OnInitialized() //todo go back to async and stahaschanged
     {
@@ -156,7 +156,7 @@
         {
             if (int.TryParse(timeoutString, out var timeout))
             {
-                newService.Timeout= TimeSpan.FromSeconds(timeout);
+                newService.Timeout = TimeSpan.FromSeconds(timeout);
             }
             else
             {
