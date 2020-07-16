@@ -21,9 +21,14 @@ namespace ServiceHealthChecker.Helpers
         //    if (log.Status == ServiceStatus.)
         //}
 
-        public static string CustomToString(this TimeSpan tspn)
+        public static string GetRoundtripTimeString(this ProbingLog log)
         {
-            return $"{Math.Floor(tspn.TotalSeconds)}.{tspn.Milliseconds}s";
+            if (log.RequestFinish == DateTime.MaxValue)
+            {
+                return "--";
+            }
+            var tspn = log.RequestFinish - log.RequestStart;
+            return $"{Math.Floor(tspn.TotalSeconds)}.{tspn.Milliseconds:0.##}s";
         }
 
         public static string ToHttpMethodString(this HttpMethods method)

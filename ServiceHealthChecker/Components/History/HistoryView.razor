@@ -13,7 +13,7 @@ else
                        $"Method: {log.UsedMethod}\n" +
                        $"Request begin: {log.RequestStart}\n" +
                        $"Request finish: {(log.RequestFinish == DateTime.MaxValue ? "--" : log.RequestFinish.ToString())}\n" +
-                       $"Time taken: {(log.RequestFinish == DateTime.MaxValue ? "--" : (log.RequestFinish - log.RequestStart).CustomToString())}\n" +
+                       $"Roundtrip time: {log.GetRoundtripTimeString()}\n" +
                        $"Expected response: {log.ExpectedResponseCode}\n" +
                        $"Got response: {log.ReceivedResponseCode}\n" +
                        $"Result: {log.Status}")" />

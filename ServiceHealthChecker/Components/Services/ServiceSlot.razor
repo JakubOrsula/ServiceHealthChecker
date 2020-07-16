@@ -1,25 +1,25 @@
 ﻿@using ServiceHealthChecker.DB.Models
 
-    <Frame>
-        <StackLayout>
-            <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Label Text=@Service.Name />
-                @if (info == null)
-                {
-                    <ActivityIndicator IsRunning="true" />
-                }
-                else
-                {
-                    <Label Text=@info.Status.ToString() />
-                }
-            </StackLayout>
-            <StackLayout Orientation="XF.StackOrientation.Horizontal">
-                <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) />
-                <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) />
-                <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
-            </StackLayout>
-        </StackLayout>
-    </Frame>
+<Frame>
+    <StackLayout>
+        <Label Text=@Service.Name StyleClass="h3" />
+        @if (info == null)
+        {
+            <ActivityIndicator IsRunning="true" />
+        }
+        else
+        {
+            <Label Text=@info.Status.ToString() />
+            <Label Text=@($"Roundtrip time: {info.GetRoundtripTimeString()}") />
+        }
+    <StackLayout Orientation="XF.StackOrientation.Horizontal">
+        <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) />
+        <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) />
+        <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
+        <Label Text=@($"✓") StyleClass="slot__service-status success" />
+    </StackLayout>
+    </StackLayout>
+</Frame>
 
 @code
 {

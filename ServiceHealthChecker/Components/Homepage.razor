@@ -1,14 +1,12 @@
 ﻿@using ServiceHealthChecker.Components.Services;
 @using ServiceHealthChecker.Components.History;
 @using ServiceHealthChecker.Components.Navigator;
+<StyleSheet Resource="Style.css" Assembly="GetType().Assembly" />
 <ScrollView>
     <StackLayout>
-        <Navigator OnNavigationClickCallback="@setView" />
+        <Navigator OnNavigationClickCallback="@setView"/>
         @switch (_currView)
         {
-            case Homepage.AvailableViews.Validators:
-                <Label Text="Validators" HorizontalOptions="XF.LayoutOptions.End"></Label>
-                break;
             case AvailableViews.Services:
                 <ServicesView />
                 break;
@@ -28,7 +26,6 @@
 @code {
     public enum AvailableViews
     {
-        Validators,
         Services,
         History
     }

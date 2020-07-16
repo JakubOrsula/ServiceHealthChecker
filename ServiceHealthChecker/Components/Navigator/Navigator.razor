@@ -1,7 +1,12 @@
-﻿<StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.Validators))">Validators</Button>
-    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.Services))">Services</Button>
-    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.History))">History</Button>
+﻿<StackLayout Orientation="XF.StackOrientation.Horizontal" HorizontalOptions="XF.LayoutOptions.Fill" StyleClass="navigator-stack">
+    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.Services))" 
+            HorizontalOptions="XF.LayoutOptions.FillAndExpand" 
+            StyleClass="navigator-stack__button">Services
+    </Button>
+    <Button OnClick="@(() => OnNavigationClickCallback.InvokeAsync(Homepage.AvailableViews.History))" 
+            HorizontalOptions="XF.LayoutOptions.FillAndExpand" 
+            StyleClass="navigator-stack__button">History
+    </Button>
 </StackLayout>
 
 @code {
