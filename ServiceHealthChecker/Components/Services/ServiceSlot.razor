@@ -13,8 +13,8 @@
             <Label Text=@($"Roundtrip time: {info.GetRoundtripTimeString()}") />
         }
     <StackLayout Orientation="XF.StackOrientation.Horizontal">
-        <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) />
-        <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) />
+        <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) StyleClass="btn btn-primary" />
+        <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) StyleClass="btn btn-secondary" />
         <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
         @if (info != null && !isProbing)
         {

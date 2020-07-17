@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using ServiceHealthChecker.DB.Models;
@@ -42,6 +43,10 @@ namespace ServiceHealthChecker.Testers
                 cts.Cancel();
             });
 
+            httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+            {
+                NoCache = true
+            };
 
             var request = new HttpRequestMessage(service.Method.ToHttpMethodObj(), service.GetFullUri());
             foreach (var item in service.Headers)

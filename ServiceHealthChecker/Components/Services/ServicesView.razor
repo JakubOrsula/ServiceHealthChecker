@@ -20,7 +20,7 @@ else
                     <ServiceHealthChecker.Components.Services.ServiceSlot @key=@service service=@service ServiceSelected="@((Service s) => selectedService = s)" />
                 }
                 <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)" 
-                        StyleClass="btn-primary">
+                        StyleClass="btn btn-primary">
                     Create new service
                 </Button>
                 break;

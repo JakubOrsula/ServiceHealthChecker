@@ -1,12 +1,28 @@
 ﻿/*CSS VARIABLES ARE UNSUPPORTED :/ 
     We also can't use preprocessor bc xamarin doesn't fully support css.
     Use search and replace to change colors.
-    - primary: #0275d8
-    - success: #5cb85c
-    - warning: #f0ad4e
-    - danger:  #d9534f
-    - light:   #f7f7f7
+    - primary:   #0275d8
+    - secondary: #6c757d
+    - success:   #5cb85c
+    - warning:   #f0ad4e
+    - danger:    #d9534f
+    - light:     #f7f7f7
 */
+
+.btn {
+    margin: 4;
+    border-radius: 4;
+}
+
+.btn-primary {
+    background-color: #0275d8;
+    color: #f7f7f7;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #f7f7f7;
+}
 
 .navigator-stack {
     align-content: center;
@@ -20,13 +36,6 @@
     border-color: #5cb85c;
     border-width: .5;
     color: #5cb85c;
-}
-
-.btn-primary {
-    margin: 4;
-    border-radius: 4;
-    background-color: #0275d8;
-    color: #f7f7f7;
 }
 
 .h3 {
@@ -45,5 +54,5 @@
 
 .slot__service-status {
     vertical-align: center;
-    font-size: large;
+    font-size: 35;
 }
