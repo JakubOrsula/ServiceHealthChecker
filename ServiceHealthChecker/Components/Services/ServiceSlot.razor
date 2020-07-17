@@ -16,7 +16,17 @@
         <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) />
         <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) />
         <ActivityIndicator IsVisible="isProbing" IsRunning="true" />
-        <Label Text=@($"✓") StyleClass="slot__service-status success" />
+        @if (info != null && !isProbing)
+        {
+            @if (info.Status == ServiceStatus.AliveAndWell)
+            {
+                <Label Text="✓" StyleClass="slot__service-status success" />
+            }
+            else
+            {
+                <Label Text="✘" StyleClass="slot__service-status danger"/>
+            }
+        }
     </StackLayout>
     </StackLayout>
 </Frame>
