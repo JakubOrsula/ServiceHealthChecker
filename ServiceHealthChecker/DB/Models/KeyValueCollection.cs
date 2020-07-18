@@ -22,6 +22,11 @@ namespace ServiceHealthChecker.DB.Models
     public abstract class StringColumn:  ComplexServiceColumn
     {
         public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 
     //although unintuitive, every column must be of different type, bc sqllite-extensions uses only types to distinguish them

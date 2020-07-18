@@ -8,6 +8,7 @@
     - danger:    #d9534f
     - light:     #f7f7f7
     - dark:      #343a40
+    Following is __partial__ bootstrap implemetation (stress on partial).
 */
 
 .m-4 {
@@ -29,6 +30,13 @@
 .btn {
     margin: 4;
     border-radius: 4;
+}
+
+.btn-outline-primary {
+    color: #0275d8;
+    border-color: #0275d8;
+    border-width: 5;
+    background-color: #f7f7f7;
 }
 
 .btn-primary {
@@ -93,8 +101,16 @@
     font-weight: bold;
 }
 
+.primary {
+    color: #0275d8;
+}
+
 .success {
     color: #5cb85c;
+}
+
+.warning {
+    color: #f0ad4e;
 }
 
 .danger {
@@ -105,8 +121,28 @@
     color: #6c757d;
 }
 
-.black {
-    color: black;
+.bg-primary {
+    background-color: #0275d8;
+}
+
+.bg-success {
+    background-color: #5cb85c;
+}
+
+.bg-warning {
+    background-color: #f0ad4e;
+}
+
+.bg-danger {
+    background-color: #d9534f;
+}
+
+.bg-secondary {
+    background-color: #6c757d;
+}
+
+.bg-black {
+    background-color: black;
 }
 
 .slot__service-status {
@@ -114,7 +150,7 @@
     font-size: 35;
 }
 
-.serviceDetail__container {
+.genericContainer {
     border-radius: 40;
     margin: 15;
     background-color: #eef0f7;

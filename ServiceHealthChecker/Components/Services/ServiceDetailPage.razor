@@ -7,15 +7,16 @@
 else
 {
     <Button OnClick="@GoBack" Text="Go back" HorizontalOptions="XF.LayoutOptions.Start" StyleClass="btn btn-secondary" />
-    <Frame StyleClass="serviceDetail__container">
+    <Frame StyleClass="genericContainer">
         <StackLayout>
-            <Label Text=@service.Name StyleClass="h4"/>
+            <Label Text=@service.Name StyleClass="h3" />
             <Label Text=@($"Method: {service.Method}") />
             <Label Text=@($"URI: {service.URI}") />
             <Label Text=@($"Timeout: {service.Timeout.TotalSeconds:00}s") />
-            <Label Text="Validation:" StyleClass="h5"/>
+            <Label Text="Validation:" StyleClass="h5" />
             <Label Text=@($"Expected response: {service.ExpectedResponseCode}") />
-            <Label Text="@($"Body must contain: {String.Join(", ", service.BodyMustContain)}")"/>
+            <Label Text="@($"Body must contain: {String.Join(", ", service.BodyMustContain)}")" />
+            <Label Text="@($"Body must not contain: {String.Join(", ", service.BodyMustNotContain)}")" />
             <StackLayout Orientation="XF.StackOrientation.Horizontal" HorizontalOptions="XF.LayoutOptions.Fill">
                 <Button OnClick="@(() => serviceToEdit = service)" Text="Edit" StyleClass="btn btn-warning" />
                 <Button OnClick="@DeleteService" Text="Delete" StyleClass="btn btn-danger" />

@@ -7,7 +7,7 @@ else
 {
     @foreach (var log in probingLogs)
     {
-        <Frame BackgroundColor="@(log.Status == ServiceStatus.AliveAndWell ? Palette.Success: Palette.Danger)" >
+        <Frame BackgroundColor="@(log.Status == ServiceStatus.AliveAndWell ? Palette.Success: Palette.Danger)" StyleClass="genericContainer">
             <Label Text="@($"Name: {log.ServiceName}\n" +
                        $"URL: {log.UsedUri.ToString()}\n" +
                        $"Method: {log.UsedMethod}\n" +
@@ -16,7 +16,7 @@ else
                        $"Roundtrip time: {log.GetRoundtripTimeString()}\n" +
                        $"Expected response: {log.ExpectedResponseCode}\n" +
                        $"Got response: {log.ReceivedResponseCode}\n" +
-                       $"Result: {log.Status}")" />
+                       $"Result: {log.Status}")" StyleClass="h5" />
         </Frame>
     }
 }
@@ -40,7 +40,7 @@ else
         await RefreshLogs();
 
     }
-    
+
     private async Task RefreshLogs()
     {
         probingLogs = await App.LogsDb.GetProbingLogsAsync(ServiceId);

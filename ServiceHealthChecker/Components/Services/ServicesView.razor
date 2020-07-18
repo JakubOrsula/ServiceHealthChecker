@@ -17,10 +17,12 @@ else
             case ServiceViews.ViewList:
                 @foreach (var service in _displayedServices)
                 {
-                    <ServiceHealthChecker.Components.Services.ServiceSlot @key=@service service=@service ServiceSelected="@((Service s) => selectedService = s)" />
+                    <Frame StyleClass="genericContainer">
+                        <ServiceHealthChecker.Components.Services.ServiceSlot @key=@service service=@service ServiceSelected="@((Service s) => selectedService = s)" />
+                    </Frame>
                 }
-                <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)" 
-                        StyleClass="btn btn-primary">
+                <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)"
+                        StyleClass="btn btn-outline-primary">
                     Create new service
                 </Button>
                 break;
@@ -67,7 +69,8 @@ else
         if (_displayedServices == null)
         {
             _displayedServices = services.ToList();
-        } else
+        }
+        else
         {
             _displayedServices.Clear();
             _displayedServices.AddRange(services.ToList());
