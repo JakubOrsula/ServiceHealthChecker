@@ -1,17 +1,17 @@
 ﻿@using ServiceHealthChecker.DB.Models
 
-<Frame>
-    <StackLayout>
-        <Label Text=@Service.Name StyleClass="h3" />
-        @if (info == null)
-        {
-            <ActivityIndicator IsRunning="true" />
-        }
-        else
-        {
-            <Label Text=@info.Status.ToString() />
-            <Label Text=@($"Roundtrip time: {info.GetRoundtripTimeString()}") />
-        }
+
+<StackLayout>
+    <Label Text=@Service.Name StyleClass="h3" />
+    @if (info == null)
+    {
+        <ActivityIndicator IsRunning="true" />
+    }
+    else
+    {
+        <Label Text=@info.Status.ToString() />
+        <Label Text=@($"Roundtrip time: {info.GetRoundtripTimeString()}") />
+    }
     <StackLayout Orientation="XF.StackOrientation.Horizontal">
         <Button Text="Probe" OnClick=@ProbeService IsEnabled=@(!isProbing) StyleClass="btn btn-primary" />
         <Button Text="Detail" OnClick=@(() => ServiceSelected.InvokeAsync(Service)) IsEnabled=@(!isProbing) StyleClass="btn btn-secondary" />
@@ -24,12 +24,12 @@
             }
             else
             {
-                <Label Text="✘" StyleClass="slot__service-status danger"/>
+                <Label Text="✘" StyleClass="slot__service-status danger" />
             }
         }
     </StackLayout>
-    </StackLayout>
-</Frame>
+</StackLayout>
+
 
 @code
 {

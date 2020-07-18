@@ -1,20 +1,31 @@
-﻿@if (serviceToEdit != null)
+﻿@using ServiceHealthChecker.Components.History
+
+@if (serviceToEdit != null)
 {
     <ServiceForm newService="serviceToEdit" DoneCallback="@(() => serviceToEdit = null)" />
 }
 else
 {
-    <Label Text=@service.Name />
-    <Label Text=@($"Method: {service.Method}") />
-    <Label Text=@($"URI: {service.URI}") />
-    <Label Text=@($"Timeout: {service.Timeout.TotalSeconds:00}s") />
-    <Label Text="Validation:" />
-    <Label Text=@($"Expected response: {service.ExpectedResponseCode}") />
-    <Button OnClick="@(() => serviceToEdit = service)" Text="Edit" />
-    <Button OnClick="@DeleteService" Text="Delete" />
-    <Button OnClick="@GoBack" Text="Go back" />
+    <Button OnClick="@GoBack" Text="Go back" HorizontalOptions="XF.LayoutOptions.Start" StyleClass="btn btn-secondary" />
+    <Frame StyleClass="serviceDetail__container">
+        <StackLayout>
+            <Label Text=@service.Name StyleClass="h4"/>
+            <Label Text=@($"Method: {service.Method}") />
+            <Label Text=@($"URI: {service.URI}") />
+            <Label Text=@($"Timeout: {service.Timeout.TotalSeconds:00}s") />
+            <Label Text="Validation:" StyleClass="h5"/>
+            <Label Text=@($"Expected response: {service.ExpectedResponseCode}") />
+            <Label Text="@($"Body must contain: {String.Join(", ", service.BodyMustContain)}")"/>
+            <StackLayout Orientation="XF.StackOrientation.Horizontal" HorizontalOptions="XF.LayoutOptions.Fill">
+                <Button OnClick="@(() => serviceToEdit = service)" Text="Edit" StyleClass="btn btn-warning" />
+                <Button OnClick="@DeleteService" Text="Delete" StyleClass="btn btn-danger" />
+            </StackLayout>
+        </StackLayout>
+    </Frame>
+
+
     <Label Text="History:" />
-    <ServiceHealthChecker.Components.History.HistoryView ServiceId="@service.ID" />
+    <HistoryView ServiceId="@service.ID" />
 
 }
 
