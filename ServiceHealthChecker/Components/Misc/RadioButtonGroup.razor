@@ -1,17 +1,30 @@
-﻿@* METHOD *@
-    <StackLayout Orientation="XF.StackOrientation.Horizontal">
-        @foreach(var item in Items)
+﻿<StackLayout Orientation="XF.StackOrientation.Horizontal">
+    @foreach (var item in Items)
+    {
+        @if (SelectedItem != item.i)
         {
-            <Button Text="@(item.v)" OnClick="@(() => SetItem.InvokeAsync(item.i))" IsEnabled="@(SelectedItem != item.i)" HorizontalOptions="XF.LayoutOptions.FillAndExpand" />
+            <Button Text="@(item.v)"
+                    OnClick="@(() => SetItem.InvokeAsync(item.i))"
+                    HorizontalOptions="XF.LayoutOptions.FillAndExpand"
+                    StyleClass="btn btn-dark" />
         }
-    </StackLayout>
+        else
+        {
+            <Button Text="@(item.v)"
+                    OnClick="@(() => SetItem.InvokeAsync(defaultItemIndex))"
+                    HorizontalOptions="XF.LayoutOptions.FillAndExpand"
+                    StyleClass="btn btn-success" />
+        }
+
+    }
+</StackLayout>
 
 @code {
 
     /// <summary>
     /// This is simple Enum -> RadioButtonGroup component. For speed and simplicity reasons  0 based enum without [Flags] is assumed.
     /// </summary>
-    /// 
+    ///
 
     public class RBItem
     {
@@ -21,6 +34,9 @@
 
     [Parameter]
     public int SelectedItem { get; set; }
+
+    [Parameter]
+    public int defaultItemIndex { get; set; }
 
     [Parameter]
     public IEnumerable<(int i, string v)> Items { get; set; }

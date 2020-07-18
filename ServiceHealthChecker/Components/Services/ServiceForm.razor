@@ -12,29 +12,45 @@
        @bind-Text="URIstring" />
 
 @* METHOD *@
+<Label Text="Select method:" StyleClass="h5" />
 <RadioButtonGroup Items="@(Enum.GetValues(typeof(HttpMethods)).Cast<HttpMethods>().Select((e, i) => (i, e.ToHttpMethodString())))"
                   SelectedItem="@((int)newService.Method)"
+                  defaultItemIndex="(int)HttpMethods.Get"
                   SetItem="((m) => newService.Method = (HttpMethods)m)" />
-@* todo use names idiot and add typeparam *@
 
+@* REQUEST FIELDS *@
+<Label Text="Select request field to edit:" StyleClass="h5" />
+<RadioButtonGroup Items="@(new List<(int i, string v)> { ((int)RequestFields.Headers, "Headers"), ((int)RequestFields.QueryParams, "Query parameters")})"
+                  SelectedItem="@((int)selectedRequestField)"
+                  defaultItemIndex="(int)RequestFields.None"
+                  SetItem="((m) => selectedRequestField = (RequestFields)m)" />
 
-<RadioButtonGroup Items="@(new List<(int i, string v)> { ((int)Sections.Headers, "Headers"), ((int)Sections.QueryParams, "Query parameters")})"
-                  SelectedItem="@((int)newService.Method)"
-                  SetItem="((m) => selectedSection = (Sections)m)" />
-
-
-@switch (selectedSection)
+@switch (selectedRequestField)
 {
-    case Sections.Headers:
+    case RequestFields.Headers:
         <MyDictionaryView Entries=@(newService.Headers) AddEntryCallback=@(() => newService.Headers.Add(new Header())) />
         break;
-    case Sections.QueryParams:
+    case RequestFields.QueryParams:
         <MyDictionaryView Entries=@(newService.QueryParams) AddEntryCallback=@(() => newService.QueryParams.Add(new QueryParam())) />
         break;
-    case Sections.BodyMustContain:
+
+}
+
+
+@* RESPONSE FIELDS *@
+<Label Text="Select validation field to edit:" StyleClass="h5" />
+<RadioButtonGroup Items="@(new List<(int i, string v)> { ((int)ResponseFields.BodyMustContain, "Body must contain"), ((int)ResponseFields.BodyMustNotContain, "Body must not contain")})"
+                  SelectedItem="@((int)selectedResponseField)"
+                  defaultItemIndex="(int)ResponseFields.None"
+                  SetItem="((m) => selectedResponseField = (ResponseFields)m)" />
+
+
+@switch (selectedResponseField)
+{
+    case ResponseFields.BodyMustContain:
         <StringCollectionView Entries=@(newService.BodyMustContain) AddEntryCallback=@(() => newService.BodyMustContain.Add(new BodyMustContain())) />
         break;
-    case Sections.BodyMustNotContain:
+    case ResponseFields.BodyMustNotContain:
         <StringCollectionView Entries=@(newService.BodyMustNotContain) AddEntryCallback=@(() => newService.BodyMustNotContain.Add(new BodyMustNotContain())) />
         break;
 
@@ -43,7 +59,7 @@
 
 @* EXPECTED CODE *@
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Label Text="Response code:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
+    <Label Text="Response code:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" StyleClass="h5" />
     <Entry Placeholder="Expected response code"
            ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="ResponseCodeString"
@@ -53,36 +69,42 @@
 
 @* TIMEOUT *@
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
-    <Label Text="Timeout:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
+    <Label Text="Timeout:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" StyleClass="h5" />
     <Entry ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
            @bind-Text="timeoutString" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
-    <Label Text="s" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
+    <Label Text="s" VerticalOptions="XF.LayoutOptions.CenterAndExpand" StyleClass="h5" />
 </StackLayout>
 
 
 @* ERRORS ARE HERE *@
-<Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" />
+<Label IsVisible="@(ErrorsInString.Length != 0)" Text="@ErrorsInString" TextColor="XF.Color.Red" StyleClass="h5" />
 
 
 @* CONTROLS *@
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
     <Button Text="Save"
             IsEnabled="@(!isSaving)"
-            OnClick="@OnSaveServiceButtonClicked" />
-    <Button IsEnabled="@(!isSaving)"
-            OnClick="@DoneCallback">
-        Abort
+            OnClick="@OnSaveServiceButtonClicked" StyleClass="btn btn-primary" />
+    <Button Text="Abort" 
+            IsEnabled="@(!isSaving)"
+            OnClick="@DoneCallback" 
+            StyleClass="btn btn-danger">
     </Button>
     <ActivityIndicator IsVisible="isSaving" IsRunning="true" />
 </StackLayout>
 
 @code {
 
-    private enum Sections
+    private enum RequestFields
     {
         None,
         Headers,
-        QueryParams,
+        QueryParams
+    }
+
+    private enum ResponseFields
+    {
+        None,
         BodyMustContain,
         BodyMustNotContain
     }
@@ -103,9 +125,9 @@
 
     private bool isSaving;
 
-    private int showMask = (int)Sections.None;
+    private RequestFields selectedRequestField = RequestFields.None;
 
-    private Sections selectedSection = Sections.None;
+    private ResponseFields selectedResponseField = ResponseFields.None;
 
     protected override void OnInitialized() //todo go back to async and stahaschanged
     {

@@ -7,7 +7,24 @@
     - warning:   #f0ad4e
     - danger:    #d9534f
     - light:     #f7f7f7
+    - dark:      #343a40
 */
+
+.m-4 {
+    margin: 4;
+}
+
+.m-3 {
+    margin: 3;
+}
+
+.m-2 {
+    margin: 2;
+}
+
+.m-1 {
+    margin: 1;
+}
 
 .btn {
     margin: 4;
@@ -16,6 +33,11 @@
 
 .btn-primary {
     background-color: #0275d8;
+    color: #f7f7f7;
+}
+
+.btn-success {
+    background-color: #5cb85c;
     color: #f7f7f7;
 }
 
@@ -31,6 +53,11 @@
 
 .btn-danger {
     background-color: #d9534f;
+    color: #f7f7f7;
+}
+
+.btn-dark {
+    background-color: #343a40;
     color: #f7f7f7;
 }
 
