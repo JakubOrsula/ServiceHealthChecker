@@ -1,8 +1,13 @@
 ﻿@foreach (var entry in Entries)
 {
-    <Entry Placeholder="Expression" @bind-Text="@entry.Value" HorizontalOptions="XF.LayoutOptions.CenterAndExpand"/>
+    <Entry Placeholder="Expression" 
+           @bind-Text="@entry.Value" 
+           ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing" 
+           HorizontalOptions="XF.LayoutOptions.FillAndExpand"/>
 }
-<Button Text="New expression" OnClick="@AddEntryCallback" HorizontalOptions="XF.LayoutOptions.Center" />
+<Button Text="New expression" OnClick="@AddEntryCallback"  
+        HorizontalOptions="XF.LayoutOptions.Center" 
+        StyleClass="btn btn-outline-secondary" />
 
 @using ServiceHealthChecker.DB.Models;
 @code {

@@ -3,7 +3,7 @@ using SQLiteNetExtensions.Attributes;
 
 namespace ServiceHealthChecker.DB.Models
 {
-    abstract public class ComplexServiceColumn
+    abstract public class CompositeServiceColumn
     {
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; }
@@ -13,13 +13,13 @@ namespace ServiceHealthChecker.DB.Models
         public Service Service { get; set; }
     }
 
-    abstract public class KeyValueColumn: ComplexServiceColumn
+    abstract public class KeyValueColumn: CompositeServiceColumn
     {
         public string Key { get; set; }
         public string Value { get; set; }
     }
 
-    public abstract class StringColumn:  ComplexServiceColumn
+    public abstract class StringColumn: CompositeServiceColumn
     {
         public string Value { get; set; }
 

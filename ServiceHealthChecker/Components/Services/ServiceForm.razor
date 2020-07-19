@@ -71,7 +71,7 @@
 <StackLayout Orientation="XF.StackOrientation.Horizontal">
     <Label Text="Timeout:" VerticalOptions="XF.LayoutOptions.CenterAndExpand" StyleClass="h5" />
     <Entry ClearButtonVisibility="XF.ClearButtonVisibility.WhileEditing"
-           @bind-Text="timeoutString" VerticalOptions="XF.LayoutOptions.CenterAndExpand" />
+           @bind-Text="timeoutString" WidthRequest="80" />
     <Label Text="s" VerticalOptions="XF.LayoutOptions.CenterAndExpand" StyleClass="h5" />
 </StackLayout>
 
@@ -129,7 +129,7 @@
 
     private ResponseFields selectedResponseField = ResponseFields.None;
 
-    protected override void OnInitialized() //todo go back to async and stahaschanged
+    protected override void OnInitialized()
     {
         URIstring = newService.URI.ToString();
         ResponseCodeString = ((int)newService.ExpectedResponseCode).ToString();

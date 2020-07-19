@@ -16,11 +16,6 @@ namespace ServiceHealthChecker.Helpers
             return "";
         }
 
-        //public static bool Success(this ProbingLog log)
-        //{
-        //    if (log.Status == ServiceStatus.)
-        //}
-
         public static string GetRoundtripTimeString(this ProbingLog log)
         {
             if (log.RequestFinish == DateTime.MaxValue)

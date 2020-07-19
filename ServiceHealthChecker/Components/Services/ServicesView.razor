@@ -21,15 +21,14 @@ else
                         <ServiceHealthChecker.Components.Services.ServiceSlot @key=@service service=@service ServiceSelected="@((Service s) => selectedService = s)" />
                     </Frame>
                 }
-                <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)"
-                        StyleClass="btn btn-outline-primary">
-                    Create new service
-                </Button>
+                <Button OnClick="@(() => serviceView = ServiceViews.CreateNew)" 
+                        Text="Create new service"
+                        StyleClass="btn btn-outline-primary" />
                 break;
             case ServiceViews.CreateNew:
                 <ServiceForm newService="@(new DB.Models.Service {
                                  Method = HttpMethods.Get,
-                                 Name = "new service",
+                                 Name = "",
                                  URI = new Uri("https://example.com/")
                              })"
                              DoneCallback="@(() => { serviceView = ServiceViews.ViewList; RefreshDisplayedServices(); })" />
